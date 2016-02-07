@@ -1,0 +1,1 @@
+<a href="<?=$a['href'];?>" <?php if($a['bx_if:show_onclick']['condition']){ ?><?=$a['bx_if:show_onclick']['content']['onclick'];?><?php } ?> class="sys_page_header_caption"><?=$a['content'];?></a>
