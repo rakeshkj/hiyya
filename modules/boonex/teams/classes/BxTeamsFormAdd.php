@@ -365,7 +365,7 @@ class BxTeamsFormAdd extends BxDolFormMedia
 
                 'allow_view_team_to' => $this->_oMain->_oPrivacy->getGroupChooser($iProfileId, 'teams', 'view_team'),
 
-                'allow_view_fans_to' => $aInputPrivacyViewFans,
+                //'allow_view_fans_to' => $aInputPrivacyViewFans,
 
                 'allow_comment_to' => $aInputPrivacyComment,
 
