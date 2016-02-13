@@ -1,4 +1,4 @@
-inc/header.inc.php/*
-cache/*
-cache_public/*
-tmp/*
+inc/header.inc.php
+cache
+cache_public
+tmp
