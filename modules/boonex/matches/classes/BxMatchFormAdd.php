@@ -375,7 +375,7 @@ class BxMatchFormAdd extends BxDolFormMedia
 
                 'allow_view_match_to' => $this->_oMain->_oPrivacy->getGroupChooser($iProfileId, 'matches', 'view_match'),
 
-                'allow_view_fans_to' => $aInputPrivacyViewFans,
+                //'allow_view_fans_to' => $aInputPrivacyViewFans,
 
                 'allow_comment_to' => $aInputPrivacyComment,
 
