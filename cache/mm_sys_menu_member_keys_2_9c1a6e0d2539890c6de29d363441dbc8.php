@@ -1,2 +1,0 @@
-<?php $mixedData=array (
-); ?>
