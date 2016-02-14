@@ -68,6 +68,6 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getMatchDetails ($id)
     {
-        return $this->getOne ("SELECT match_type FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getAll ("SELECT match_type, join_confirmation FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 }

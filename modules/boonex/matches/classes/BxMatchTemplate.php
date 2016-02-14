@@ -24,8 +24,8 @@ class BxMatchTemplate extends BxDolTwigTemplate
     function unit ($aData, $sTemplateName, &$oVotingView, $isShort = false)
     {
 		$match_detail = $this->_oDb->getMatchDetails($aData['id']);
-		$match_type =  ($match_detail == 0)?'Practice':'Teams';
-		$aData['match_type'] = $match_type;
+		$match_type =  ($match_detail[0]['match_type'] == 0)?'Practice':'Teams';
+		$join_type =  ($match_detail[0]['join_confirmation'] == 0)?'Open':'Invitation Only';
         if (null == $this->_oMain)
             $this->_oMain = BxDolModule::getInstance('BxMatchModule');
 
@@ -46,7 +46,8 @@ class BxMatchTemplate extends BxDolTwigTemplate
             'thumb_url' => $sImage ? $sImage : $this->getImageUrl('no-image-thumb.png'),
             'match_url' => BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aData['uri'],
             'match_title' => $aData['title'],
-			'match_type' => $aData['match_type'],
+			'match_type' => $match_type,
+			'join_type' => $join_type,
             'created' => defineTimeInterval($aData['created']),
             'fans_count' => $aData['fans_count'],
             'country_city' => $this->_oMain->_formatLocation($aData),
