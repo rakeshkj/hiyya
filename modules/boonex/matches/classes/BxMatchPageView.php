@@ -104,9 +104,14 @@ class BxMatchPageView extends BxDolTwigPageView
 
     function getBlockCode_Fans()
     {
-        return parent::_blockFans ($this->_oDb->getParam('bx_matches_perpage_view_fans'), 'isAllowedViewFans', 'getFans');
+        return $this->_blockFans ($this->_oDb->getParam('bx_matches_perpage_view_fans'), 'isAllowedViewFans', 'getFans');
+		
     }
-
+	function getBlockCode_Fans_Away()
+    {
+        return $this->_blockFans ($this->_oDb->getParam('bx_matches_perpage_view_fans'), 'isAllowedViewFans', 'getFans');
+		
+    }
     function getBlockCode_FansUnconfirmed()
     {
         return parent::_blockFansUnconfirmed (BX_GROUPS_MAX_FANS);
@@ -214,5 +219,41 @@ class BxMatchPageView extends BxDolTwigPageView
             'location' => $sLocation,
         );
         return $this->_oTemplate->parseHtmlByName('entry_view_block_info', $aVars);
+    }
+	
+	function _blockFans($iPerPage, $sFuncIsAllowed = 'isAllowedViewFans', $sFuncGetFans = 'getFans')
+    {
+        if (!$this->_oMain->$sFuncIsAllowed($this->aDataEntry))
+            return '';
+
+        $iPage = (int)$_GET['page'];
+        if( $iPage < 1)
+            $iPage = 1;
+        $iStart = ($iPage - 1) * $iPerPage;
+
+        $aProfiles = array ();
+        $iNum = $this->_oDb->$sFuncGetFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, $iStart, $iPerPage);
+        if (!$iNum || !$aProfiles)
+            return MsgBox(_t("_Empty"));
+
+        bx_import('BxTemplSearchProfile');
+        $oBxTemplSearchProfile = new BxTemplSearchProfile();
+        $sMainContent = '';
+        foreach ($aProfiles as $aProfile) {
+            $sMainContent .= $oBxTemplSearchProfile->displaySearchUnit($aProfile, array ('ext_css_class' => 'bx-def-margin-sec-top-auto'));
+        }
+        $ret .= $sMainContent;
+        $ret .= '<div class="clear_both"></div>';
+
+        $oPaginate = new BxDolPaginate(array(
+            'page_url' => 'javascript:void(0);',
+            'count' => $iNum,
+            'per_page' => $iPerPage,
+            'page' => $iPage,
+            'on_change_page' => 'return !loadDynamicBlock({id}, \'' . bx_append_url_params(BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri], 'page={page}&per_page={per_page}') . '\');',
+        ));
+        $sAjaxPaginate = $oPaginate->getSimplePaginate('', -1, -1, false);
+
+        return array($ret, array(), $sAjaxPaginate);
     }
 }

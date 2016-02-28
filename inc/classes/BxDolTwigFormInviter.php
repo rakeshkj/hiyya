@@ -71,7 +71,7 @@ class BxDolTwigFormInviter extends BxTemplFormView
 				$aTeams[] = array (
                 'title' => $val['title'],
                 'link' => "m/teams/view/".$val['uri'],
-				'ID' => $val['author_id'],
+				'ID' => $val['author_id'].'_'.$val['id'],
 				);  
 			}	
         }

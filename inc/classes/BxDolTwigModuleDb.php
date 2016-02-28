@@ -295,7 +295,7 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 	//Team functions
 	function getPublicTeam ()
     {
-        return $this->getAll ("SELECT `title`,`uri`,`author_id`,`fans_count` FROM `bx_teams_main` WHERE `Status` = 'Approved' AND `allow_view_team_to` = 3");
+        return $this->getAll ("SELECT `id`,`title`,`uri`,`author_id`,`fans_count` FROM `bx_teams_main` WHERE `Status` = 'Approved' AND `allow_view_team_to` = 3");
     }
 	
     // fans and admins functions
