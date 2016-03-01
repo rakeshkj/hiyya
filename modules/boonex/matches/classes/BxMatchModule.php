@@ -291,29 +291,29 @@ class BxMatchModule extends BxDolTwigModule
 					}
 					
 				$time = time();
-				$teams = array();
 				$team_users = bx_get('inviter_teams');
-				//print_r($team_users);
+			
 				foreach($team_users as $team_user) {
 					$teamuser = explode('_', $team_user);
-					$teams[]['team_creater'] = $teamuser[0];
-					$teams[]['team_id'] = $teamuser[1];
+					$teams[] = $teamuser;
 				}
 				//echo '<pre>';print_r($teams);
 				foreach($teams as $team){
-					//print_r($team);    
+					
 					$sQuery =
 					"
 						INSERT INTO
 							`bx_matches_fans`
 						SET
 							`id_entry` = '{$iEntryId}',
-							`id_profile` = '{$team['team_creater']}',
-							`team_id` = '{$team['team_id']}',
+							`id_profile` = '{$team[0]}',
+							`team_id` = '{$team[1]}',
 							`when` = '{$time}',
 							`confirmed`  = 0
 					";
-					db_res($sQuery);      
+					db_res($sQuery); 
+
+					
 					
 				}
 				} else {

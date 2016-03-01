@@ -233,12 +233,14 @@ class BxMatchPageView extends BxDolTwigPageView
 
         $aProfiles = array ();
         $iNum = $this->_oDb->$sFuncGetFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, $iStart, $iPerPage);
+		//print_r($iNum);
         if (!$iNum || !$aProfiles)
             return MsgBox(_t("_Empty"));
 
         bx_import('BxTemplSearchProfile');
         $oBxTemplSearchProfile = new BxTemplSearchProfile();
         $sMainContent = '';
+		//echo '<pre>';print_r($aProfiles);
         foreach ($aProfiles as $aProfile) {
             $sMainContent .= $oBxTemplSearchProfile->displaySearchUnit($aProfile, array ('ext_css_class' => 'bx-def-margin-sec-top-auto'));
         }

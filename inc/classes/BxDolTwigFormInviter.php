@@ -14,9 +14,9 @@ class BxDolTwigFormInviter extends BxTemplFormView
     function BxDolTwigFormInviter ($oMain, $sMsgNoUsers, $aDataEntry = null)
     {
         $aVisitorsPreapare = $oMain->_oDb->getPotentialVisitors ($oMain->_iProfileId);
-		$aTeamList = $oMain->_oDb->getPublicTeam();
+		$aTeamList = $oMain->_oDb->getPublicTeam($oMain->_iProfileId);
 		//echo $oMain->_aModule;
-		//echo '<pre>';print_r($oMain->_aModule['uri']);
+		//echo '<pre>';print_r($aDataEntry['match_type']);
         $aVisitors = array ();
 		$userAge = '';
 		$match_person_age = '';
@@ -64,7 +64,7 @@ class BxDolTwigFormInviter extends BxTemplFormView
             'bx_repeat:rows' => $aVisitors,
             'msg_no_users' => $aVisitors ? '' : $sMsgNoUsers,
         );
-		if($oMain->_aModule['uri'] == 'matches'){
+		if($oMain->_aModule['uri'] == 'matches' && $aDataEntry['match_type']==1){
 			$team_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
 		foreach ($aTeamList as $key => $val) {
 			if($val['fans_count'] <= $team_capacity) {
