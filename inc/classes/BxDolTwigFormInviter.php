@@ -64,7 +64,7 @@ class BxDolTwigFormInviter extends BxTemplFormView
             'bx_repeat:rows' => $aVisitors,
             'msg_no_users' => $aVisitors ? '' : $sMsgNoUsers,
         );
-		if($oMain->_aModule['uri'] == 'matches' && $aDataEntry['match_type']==1){
+		if($oMain->_aModule['uri'] == 'matches'){
 			$team_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
 		foreach ($aTeamList as $key => $val) {
 			if($val['fans_count'] <= $team_capacity) {
