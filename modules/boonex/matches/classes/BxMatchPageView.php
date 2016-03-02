@@ -232,7 +232,7 @@ class BxMatchPageView extends BxDolTwigPageView
         $iStart = ($iPage - 1) * $iPerPage;
 
         $aProfiles = array ();
-        $iNum = $this->_oDb->$sFuncGetFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, $iStart, $iPerPage);
+        $iNum = $this->_oDb->getFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, $iStart, $iPerPage);
 		//print_r($iNum);
         if (!$iNum || !$aProfiles)
             return MsgBox(_t("_Empty"));
@@ -241,8 +241,16 @@ class BxMatchPageView extends BxDolTwigPageView
         $oBxTemplSearchProfile = new BxTemplSearchProfile();
         $sMainContent = '';
 		//echo '<pre>';print_r($aProfiles);
+		$i=0;
         foreach ($aProfiles as $aProfile) {
-            $sMainContent .= $oBxTemplSearchProfile->displaySearchUnit($aProfile, array ('ext_css_class' => 'bx-def-margin-sec-top-auto'));
+			if($i==0) {
+			$sMainContent .= '<div><b>Home</b></div>';
+			} elseif($i==1) {
+				
+				$sMainContent .= '<div><b>Away</b></div>';
+			} 
+            $sMainContent .= $this->displaySearchUnit($aProfile, array ('ext_css_class' => 'bx-def-margin-sec-top-auto'));
+			$i++;
         }
         $ret .= $sMainContent;
         $ret .= '<div class="clear_both"></div>';
@@ -257,5 +265,43 @@ class BxMatchPageView extends BxDolTwigPageView
         $sAjaxPaginate = $oPaginate->getSimplePaginate('', -1, -1, false);
 
         return array($ret, array(), $sAjaxPaginate);
+    }
+	
+	function displaySearchUnit($aData, $aExtendedCss = array())
+    {
+		
+        $sCode = '';
+        $sOutputMode = (isset ($_GET['search_result_mode']) && $_GET['search_result_mode']=='ext') ? 'ext' : 'sim';
+
+        $sTemplateName = 'match_team_list.html';
+
+        if ($sTemplateName) {
+                $sCode .= $this->PrintSearhResult( $aData, array(), $aExtendedCss, $sTemplateName );
+        }
+        return $sCode;
+    }
+	function PrintSearhResult($aProfileInfo, $aCoupleInfo = '', $aExtendedKey = null, $sTemplateName = '', $oCustomTemplate = null)
+    {
+        
+
+        $sProfileThumb = get_member_thumbnail( $aProfileInfo['ID'], 'none', ! $bExtMode, 'visitor' );
+        
+        $team_details = $this->_oDb->getTeamDetails($aProfileInfo['team_id']);
+		//echo '<pre>';print_r($team_details);
+        $aKeys = array(
+            'thumbnail' => $sProfileThumb,
+			'team_name' => $team_details[0]['title'],
+			'link' => "m/teams/view/".$team_details[0]['uri'],
+            
+        );
+
+        if ( $aExtendedKey and is_array($aExtendedKey) and !empty($aExtendedKey) ) {
+            foreach($aExtendedKey as $sKey => $sValue )
+                $aKeys[$sKey] = $sValue;
+        } else {
+            $aKeys['ext_css_class'] = '';
+        }
+
+        return ($oCustomTemplate) ? $oCustomTemplate->parseHtmlByName($sTemplateName, $aKeys) : $GLOBALS['oSysTemplate']->parseHtmlByName($sTemplateName, $aKeys);
     }
 }
