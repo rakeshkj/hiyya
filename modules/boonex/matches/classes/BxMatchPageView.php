@@ -381,7 +381,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 ),
 				'bx_if:confirmed' => array (
                     'condition' => $aProfile['confirmed'] == 0 ,
-                    'content' => array (),
+                    'content' => array ('id' => $aProfile['ID']),
                 ),
 				'bx_if:teamPlayer' => array (
                     'condition' => !empty($aPlayersProfiles),
