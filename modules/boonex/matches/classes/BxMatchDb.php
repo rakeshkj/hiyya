@@ -71,7 +71,7 @@ class BxMatchDb extends BxDolTwigModuleDb
         return $this->getAll ("SELECT match_type, join_confirmation FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 	
-	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type)
+	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type='')
     {
         $isConfirmed = $isConfirmed ? 1 : 0;
         $sFilter = '';
