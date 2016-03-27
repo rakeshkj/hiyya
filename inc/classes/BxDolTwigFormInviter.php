@@ -15,8 +15,9 @@ class BxDolTwigFormInviter extends BxTemplFormView
     {
         $aVisitorsPreapare = $oMain->_oDb->getPotentialVisitors ($oMain->_iProfileId);
 		$aTeamList = $oMain->_oDb->getPublicTeam($oMain->_iProfileId);
+		$pgdetails = $oMain->_oDb->getPalgroundDetails($aDataEntry['playground']);
 		//echo $oMain->_aModule;
-		//echo '<pre>';print_r($aDataEntry['match_type']);
+		//echo '<pre>';print_r($pgdetails);
         $aVisitors = array ();
 		$userAge = '';
 		$match_person_age = '';
@@ -66,8 +67,9 @@ class BxDolTwigFormInviter extends BxTemplFormView
         );
 		if($oMain->_aModule['uri'] == 'matches'){
 			$team_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
+			
 		foreach ($aTeamList as $key => $val) {
-			if($val['fans_count'] <= $team_capacity) {
+			if($val['fans_count'] <= $team_capacity && $pgdetails[0]['min_players']>=$val['fans_count']) {
 				$aTeams[] = array (
                 'title' => $val['title'],
                 'link' => "m/teams/view/".$val['uri'],

@@ -1,6 +1,20 @@
 <div class="searchrow_block_simple bx-def-margin-thd __ext_css_class__">
 	__thumbnail__
 	<div class="clear_both"></div>
-	Team Name : <a href="__link__" target="_blank">__team_name__</a>
+	Team Name : <a href="__link__" target="_blank">__team_name__</a> <br>
+	<bx_if:teamadmin>
+           
+        <a href="__invite_link__" target="_blank">Invite Player</a><br><br><br>
+
+    </bx_if:teamadmin>
+	<div class="clear_both"></div>
+	<bx_if:teamPlayer>
+           
+        <bx_repeat:team_player>
+		Team's Players
+		    __thumbplayer__
+		</bx_repeat:team_player>
+
+    </bx_if:teamPlayer>
 	<div class="clear_both"></div>
 </div>

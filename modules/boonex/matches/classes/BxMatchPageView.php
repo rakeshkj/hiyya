@@ -107,14 +107,10 @@ class BxMatchPageView extends BxDolTwigPageView
         return $this->_blockFans ($this->_oDb->getParam('bx_matches_perpage_view_fans'), 'isAllowedViewFans', 'getFans');
 		
     }
-	function getBlockCode_Fans_Away()
-    {
-        return $this->_blockFans ($this->_oDb->getParam('bx_matches_perpage_view_fans'), 'isAllowedViewFans', 'getFans');
-		
-    }
+	
     function getBlockCode_FansUnconfirmed()
     {
-        return parent::_blockFansUnconfirmed (BX_GROUPS_MAX_FANS);
+        return $this->_blockFansUnconfirmed (BX_GROUPS_MAX_FANS);
     }
 
     function getCode()
@@ -232,15 +228,13 @@ class BxMatchPageView extends BxDolTwigPageView
         $iStart = ($iPage - 1) * $iPerPage;
 
         $aProfiles = array ();
-        $iNum = $this->_oDb->getFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, $iStart, $iPerPage);
-		//print_r($iNum);
+        $iNum = $this->_oDb->getFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, 0, 2, '', 't');
         if (!$iNum || !$aProfiles)
             return MsgBox(_t("_Empty"));
 
         bx_import('BxTemplSearchProfile');
         $oBxTemplSearchProfile = new BxTemplSearchProfile();
         $sMainContent = '';
-		//echo '<pre>';print_r($aProfiles);
 		$i=0;
         foreach ($aProfiles as $aProfile) {
 			if($i==0) {
@@ -287,11 +281,31 @@ class BxMatchPageView extends BxDolTwigPageView
         $sProfileThumb = get_member_thumbnail( $aProfileInfo['ID'], 'none', ! $bExtMode, 'visitor' );
         
         $team_details = $this->_oDb->getTeamDetails($aProfileInfo['team_id']);
-		//echo '<pre>';print_r($team_details);
+		
+		$aPlayersProfiles = array ();
+        $iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], true, 'p',$aProfileInfo['team_id']);
+		//echo '<pre>';print_r($aPlayersProfiles);
+		foreach ($aPlayersProfiles as $aPlayersProfile) {
+			
+			$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ));
+		}
         $aKeys = array(
             'thumbnail' => $sProfileThumb,
 			'team_name' => $team_details[0]['title'],
 			'link' => "m/teams/view/".$team_details[0]['uri'],
+			'bx_if:teamadmin' => array (
+                    'condition' => $aProfileInfo['id_profile'] == $this->_oMain->_iProfileId,
+                    'content' => array (
+						'invite_link'=> 'm/matches/inviteteamplayers/'.$this->aDataEntry[$this->_oDb->_sFieldId].'/'.$aProfileInfo['team_id']
+					)
+                ),
+			'bx_if:teamPlayer' => array (
+                    'condition' => !empty($aPlayersProfiles),
+                    'content' => array (
+						'bx_repeat:team_player' => $sProfileThumbPlayer
+						
+					)
+                ),
             
         );
 
@@ -303,5 +317,90 @@ class BxMatchPageView extends BxDolTwigPageView
         }
 
         return ($oCustomTemplate) ? $oCustomTemplate->parseHtmlByName($sTemplateName, $aKeys) : $GLOBALS['oSysTemplate']->parseHtmlByName($sTemplateName, $aKeys);
+    }
+	
+	
+	function _blockFansUnconfirmed($iFansLimit = 1000)
+    {
+        if (!$this->_oMain->isEntryAdmin($this->aDataEntry))
+            return '';
+
+        $aProfiles = array ();
+        $iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't');
+        if (!$iNum)
+            return MsgBox(_t('_Empty'));
+
+        $sActionsUrl = BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri] . '?ajax_action=';
+        $aButtons = array (
+            array (
+                'type' => 'submit',
+                'name' => 'fans_reject',
+                'value' => _t('_sys_btn_fans_reject'),
+                'onclick' => "onclick=\"getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$sActionsUrl}reject&ids=' + sys_manage_items_get_unconfirmed_fans_ids(), false, 'post'); return false;\"",
+            ),
+            array (
+                'type' => 'submit',
+                'name' => 'fans_confirm',
+                'value' => _t('_sys_btn_fans_confirm'),
+                'onclick' => "onclick=\"getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$sActionsUrl}confirm&ids=' + sys_manage_items_get_unconfirmed_fans_ids(), false, 'post'); return false;\"",
+            ),
+        );
+        bx_import ('BxTemplSearchResult');
+        $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit');
+        $aVars = array(
+            'suffix' => 'unconfirmed_fans',
+            'content' => $this->_profilesEdit($aProfiles),
+            'control' => $sControl,
+        );
+        return $this->_oMain->_oTemplate->parseHtmlByName('manage_items_form_match', $aVars);
+    }
+	
+	function _profilesEdit(&$aProfiles, $isCenterContent = false, $aDataEntry = array())
+    {
+        $sResult = "";
+		$i=0;
+		$aPlayersProfiles = array ();
+        //echo '<pre>';print_r($aProfiles);
+        foreach($aProfiles as $aProfile) {
+			
+			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], '', 'p',$aProfile['team_id']);
+			foreach ($aPlayersProfiles as $aPlayersProfile) {
+				
+				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ));
+			}
+			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
+			
+            $aVars = array(
+                'id' => $aProfile['ID'],
+                'thumb' => get_member_thumbnail($aProfile['ID'], 'none', true),
+				'team_name' => $team_details[0]['title'],
+				'link' => "m/teams/view/".$team_details[0]['uri'],
+                'bx_if:admin' => array (
+                    'condition' => $aDataEntry && $this->isEntryAdmin ($aDataEntry, $aProfile['ID']) ? true : false,
+                    'content' => array (),
+                ),
+				'bx_if:confirmed' => array (
+                    'condition' => $aProfile['confirmed'] == 0 ,
+                    'content' => array (),
+                ),
+				'bx_if:teamPlayer' => array (
+                    'condition' => !empty($aPlayersProfiles),
+                    'content' => array (
+						'bx_repeat:team_player' => $sProfileThumbPlayer
+						
+					)
+                ),
+            );
+			if($i==0) {
+			$sResult .= '<div><b>Home</b></div>';
+			} elseif($i==1) {
+				
+				$sResult .= '<div><b>Away</b></div>';
+			} 
+            $sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
+			$i++;
+        }
+
+        return $isCenterContent ? $GLOBALS['oFunctions']->centerContent ($sResult, '.sys_fan_unit') : $sResult;
     }
 }

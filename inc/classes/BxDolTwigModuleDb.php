@@ -297,7 +297,19 @@ class BxDolTwigModuleDb extends BxDolModuleDb
     {
         return $this->getAll ("SELECT `id`,`title`,`uri`,`author_id`,`fans_count` FROM `bx_teams_main` WHERE `Status` = 'Approved' AND `allow_view_team_to` = 3 GROUP By `author_id`");
     }
-	
+	function getTeamFans($iEntryId, $isConfirmed)
+    {
+        $isConfirmed = $isConfirmed ? 1 : 0;
+        $a = $this->getAllWithKey ("SELECT `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `bx_teams_fans` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = $isConfirmed AND `p`.`Status` = 'Active') ORDER BY `f`.`when`",'NickName');
+        foreach ($a as $k => $r) {
+            if ($iProfileId == $r['ID']) {
+                unset($a[$k]);
+                break;
+            }
+        }
+        asort ($a);
+        return $a;
+    }
     // fans and admins functions
 
     function getBroadcastRecipients ($iEntryId)
@@ -443,6 +455,11 @@ class BxDolTwigModuleDb extends BxDolModuleDb
         } else {
             return $this->query ("DELETE FROM `" . $this->_sPrefix . $this->_sTableAdmins . "` WHERE `id_entry` = '$iEntryId' AND `id_profile` = '$aProfileIds'");
         }
+    }
+	
+	function getPalgroundDetails ($id)
+    {
+        return $this->getAll ("SELECT * FROM `bx_matches_pg_main` WHERE  `id` = '" . $id . "'");
     }
 
 }

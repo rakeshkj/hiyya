@@ -232,7 +232,140 @@ class BxMatchModule extends BxDolTwigModule
     {
         parent::_actionBroadcast ($iEntryId, _t('_bx_matches_page_title_broadcast'), _t('_bx_matches_msg_broadcast_no_recipients'), _t('_bx_matches_msg_broadcast_message_sent'));
     }
+	function actionInviteTeamPlayers ($iEntryId,$teamId)
+    {
+        $this->_InviteTeamPlayers ($iEntryId, 'bx_matches_invitation', $this->_oDb->getParam('bx_matches_max_email_invitations'), _t('_bx_matches_msg_invitation_sent'), _t('_bx_matches_msg_no_users_to_invite'), _t('_bx_matches_page_title_invite'), $teamId);
+    }
+	
+	function _InviteTeamPlayers ($iEntryId, $sEmailTemplate, $iMaxEmailInvitations, $sMsgInvitationSent, $sMsgNoUsers, $sTitle, $teamId)
+    {
+        $iEntryId = (int)$iEntryId;
+        if (!($aDataEntry = $this->_oDb->getEntryByIdAndOwner($iEntryId, $this->_iProfileId, $this->isAdmin()))) {
+            $this->_oTemplate->displayPageNotFound ();
+            return;
+        }
+		//Check match capacity
+		$pgdetails = $this->_oDb->getPalgroundDetails($aDataEntry['playground']);
+		$player_count = $aDataEntry['fans_count'];
+		$min_player_match = $pgdetails[0]['min_players'];
+		$max_player_match = $pgdetails[0]['max_players'];
+		$matchPath = BX_DOL_URL_ROOT .  $this->_oConfig->getBaseUri().'view/'.$aDataEntry['uri'];
+		if($max_player_match==$player_count) {
+			echo '<script type="text/javascript" language="javascript">
+                           alert("Match max capacity reached, you can not invite more");
+						   window.location = "'.$matchPath.'";
+                        </script>';
+            exit;
+			
+		}
+		//end here
+        $this->_oTemplate->pageStart();
 
+        $GLOBALS['oTopMenu']->setCustomSubHeader($aDataEntry[$this->_oDb->_sFieldTitle]);
+        $GLOBALS['oTopMenu']->setCustomVar($this->_sPrefix.'_view_uri', $aDataEntry[$this->_oDb->_sFieldUri]);
+        $GLOBALS['oTopMenu']->setCustomBreadcrumbs(array(
+            _t('_'.$this->_sPrefix) => BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'home/',
+            $aDataEntry[$this->_oDb->_sFieldTitle] => BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry[$this->_oDb->_sFieldUri],
+            $sTitle . $aDataEntry[$this->_oDb->_sFieldTitle] => '',
+        ));
+
+        bx_import('BxDolMatchFormInviter');
+        $oForm = new BxDolMatchFormInviter ($this, $sMsgNoUsers, $aDataEntry);
+        $oForm->initChecker();
+			
+        if ($oForm->isSubmittedAndValid ()) {
+
+            $aInviter = getProfileInfo($this->_iProfileId);
+            $aPlusOriginal = $this->_getInviteParams ($aDataEntry, $aInviter);
+
+            $oEmailTemplate = new BxDolEmailTemplates();
+            $aTemplate = $oEmailTemplate->getTemplate($sEmailTemplate);
+            $iSuccess = 0;
+            // send invitation to registered members
+			
+            if (false !== bx_get('inviter_users') && is_array(bx_get('inviter_users')))  {	
+				$time = time();
+				$aInviteUsers = bx_get('inviter_users');;
+				foreach($aInviteUsers as $team){
+					
+					$sQuery =
+					"
+						INSERT IGNORE INTO
+							`bx_matches_fans`
+						SET
+							`id_entry` = '{$iEntryId}',
+							`id_profile` = '{$team[0]}',
+							`team_id` = '{$teamId}',
+							`when` = '{$time}',
+							`confirmed`  = 0,
+							`type`  = 'p'
+					";
+					db_res($sQuery); 
+				}
+				
+					
+				
+				//echo '<pre>';print_r($aInviteUsers);die;
+                foreach ($aInviteUsers as $iRecipient) {
+                    $aRecipient = getProfileInfo($iRecipient);
+                    //$aPlus = array_merge (array ('NickName' => ' ' . getNickName($aRecipient['ID'])), $aPlusOriginal);
+                    //$iSuccess += sendMail(trim($aRecipient['Email']), $aTemplate['Subject'], $aTemplate['Body'], '', $aPlus) ? 1 : 0;
+					// Send message into the member's site personal mailbox;
+					$aRepl = array (
+                '<MatchName>' => $aDataEntry['title'],
+                '<MatchLocation>' => _t($GLOBALS['aPreValues']['Country'][$aDataEntry['country']]['LKey']) . (trim($aDataEntry['city']) ? ', '.$aDataEntry['city'] : '') . ', ' . $aDataEntry['zip'],
+                '<MatchUrl>' => $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry['uri'],
+                '<InviterUrl>' => $aInviter ? getProfileLink($aInviter['ID']) : 'javascript:void(0);',
+                '<InviterNickName>' => $aInviter ? getNickName($aInviter['ID']) : _t('_bx_matches_user_unknown'),
+                '<InvitationText>' => nl2br(process_pass_data(strip_tags($_POST['inviter_text']))),
+				'<NickName>' => getNickName($aRecipient['ID']),
+            );
+			$aTemplateBodyInternal = str_replace(array_keys($aRepl), array_values($aRepl), $aTemplate['Body']);
+			$aTemplateSubjectInternal = str_replace(array_keys($aRepl), array_values($aRepl), $aTemplate['Subject']);
+					$sQuery =
+					"
+						INSERT INTO
+							`sys_messages`
+						SET
+							`Date` = NOW(),
+							`Sender` = '{$this->_iProfileId}',
+							`Recipient` = '{$aRecipient['ID']}',
+							`Subject` = '{$aTemplateSubjectInternal}',
+							`Text`  = '{$aTemplateBodyInternal}',
+							`New` = '1',
+							`Type` = 'letter'
+					";
+					db_res($sQuery);
+					$iSuccess++;
+                }
+				}
+
+            // send invitation to additional emails
+            $iMaxCount = $iMaxEmailInvitations;
+            $aEmails = preg_split ("#[,\s\\b]+#", bx_get('inviter_emails'));
+            $aPlus = array_merge (array ('NickName' => ''), $aPlusOriginal);
+            if ($aEmails && is_array($aEmails)) {
+                foreach ($aEmails as $sEmail) {
+                    if (strlen($sEmail) < 5)
+                        continue;
+                    $iRet = sendMail(trim($sEmail), $aTemplate['Subject'], $aTemplate['Body'], '', $aPlus) ? 1 : 0;
+                    $iSuccess += $iRet;
+                    if ($iRet && 0 == --$iMaxCount)
+                        break;
+                }
+            }
+
+            $sMsg = sprintf($sMsgInvitationSent, $iSuccess);
+            echo MsgBox($sMsg);
+            $this->_oTemplate->addCss ('main.css');
+            $this->_oTemplate->pageCode ($sMsg, true, false);
+            return;
+	}
+        echo $oForm->getCode ();
+        $this->_oTemplate->addCss ('main.css');
+        $this->_oTemplate->addCss ('inviter.css');
+        $this->_oTemplate->pageCode($sTitle . $aDataEntry[$this->_oDb->_sFieldTitle]);
+    }
     function actionInvite ($iEntryId)
     {
         $this->_actionInvite ($iEntryId, 'bx_matches_invitation', $this->_oDb->getParam('bx_matches_max_email_invitations'), _t('_bx_matches_msg_invitation_sent'), _t('_bx_matches_msg_no_users_to_invite'), _t('_bx_matches_page_title_invite'));
@@ -302,14 +435,15 @@ class BxMatchModule extends BxDolTwigModule
 					
 					$sQuery =
 					"
-						INSERT INTO
+						INSERT IGNORE INTO
 							`bx_matches_fans`
 						SET
 							`id_entry` = '{$iEntryId}',
 							`id_profile` = '{$team[0]}',
 							`team_id` = '{$team[1]}',
 							`when` = '{$time}',
-							`confirmed`  = 0
+							`confirmed`  = 0,
+							`type`  = 't'
 					";
 					db_res($sQuery); 
 
