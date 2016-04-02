@@ -322,8 +322,8 @@ class BxMatchPageView extends BxDolTwigPageView
 	
 	function _blockFansUnconfirmed($iFansLimit = 1000)
     {
-        if (!$this->_oMain->isEntryAdmin($this->aDataEntry))
-            return '';
+        //if (!$this->_oMain->isEntryAdmin($this->aDataEntry))
+            //return '';
 
         $aProfiles = array ();
         $iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't');

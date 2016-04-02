@@ -243,7 +243,7 @@
             // get data;
             $aActivites = $this -> oSearch -> getSearchData();
             $aProccesedActivites = $this -> _proccesActivites($aActivites, ' style="display:none" ', true);
-
+			count($aProccesedActivites);
             $oJsonParser  = new Services_JSON();
             $aRet = array(
                 'events'        => $aProccesedActivites,
@@ -265,7 +265,18 @@
         {
             $this -> serviceGetMemberSpyBlock(true, $sActivityType);
         }
+		function actionMyInvitation()
+        {
+			
+                // procces all activites;
+                $sOutputCode = $this -> _proccesInvitation();;
+            
+                $sOutputCode = MsgBox( _t('_Empty') );
+           
 
+            echo $this -> _oTemplate  -> addCss('spy.css', true);
+            echo $sOutputCode;
+        }
         /**
          * Function will generate global spy's page (content activity only!);
          *
@@ -665,7 +676,31 @@ JS;
         {
             $sOutputCode = null;
             $aProcessedActivites = array();
-
+			$matchInvitations = $this -> _oDb-> getAllInvitationMatch($this -> iMemberId);
+			$teamInvitations = $this -> _oDb-> getAllInvitationTeam($this -> iMemberId);
+			foreach ($matchInvitations as $matchInvitation) {
+				$match_info = $this -> _oDb ->getMatchInfo($matchInvitation['id_entry']);
+				if(isset($matchInvitation['type'])){
+					$team_info = $this -> _oDb ->getTeamInfo($matchInvitation['team_id']);
+					$matchInvitation['team_author_id'] = $team_info[0]['author_id'];
+				}
+				$matchInvitation['sender_id'] = $matchInvitation['id_profile'];
+				$matchInvitation['invitation_type'] = 'match';
+				$matchInvitation['title'] = $match_info[0]['title'];
+				$matchInvitation['uri'] = $match_info[0]['uri'];
+				$matchInvitation['match_author_id'] = $match_info[0]['author_id'];
+				$aActivites[] = $matchInvitation;
+			}
+			foreach ($teamInvitations as $teamInvitation) {
+				$team_info = $this -> _oDb ->getTeamInfo($teamInvitation['id_entry']);
+				$teamInvitation['sender_id'] = $teamInvitation['id_profile'];
+				$teamInvitation['invitation_type'] = 'team';
+				$teamInvitation['title'] = $team_info[0]['title'];
+				$teamInvitation['uri'] = $team_info[0]['uri'];
+				$teamInvitation['team_author_id'] = $team_info[0]['author_id'];
+				$aActivites[] = $teamInvitation;
+			}
+			//echo '<pre>';print_r($aActivites);die;
             if( is_array($aActivites) ) {
                 foreach($aActivites as $iKey => $aItems) {
                     $aParams  = unserialize($aItems['params']);
@@ -673,18 +708,72 @@ JS;
                     if($bSetViewed) {
                         $this -> _oDb -> setViewed($aItems['id']);
                     }
-
                     // procces activity text;
                     $sActivity = $this -> _parseParameters( _t($aItems['lang_key']), $aParams );
+					
+					if($aItems['invitation_type']=='match') {
+						$id_profile = $aItems['id_profile'];
+						$match_title = $aItems['title'];
+						$match_uri = 'm/matches/view/'.$aItems['uri'];
+						$match_link = '<a href="'.$match_uri.'">'.$match_title.'</a>';
+						$profileName = getNickName($aItems['match_author_id']);
+                        $profileLink = getProfileLink($aItems['match_author_id']);
+						$match_admin = '<a href="'.$profileLink.'">'.$profileName.'</a>';
+						$date_added = getLocaleDate( $aItems['when'], BX_DOL_LOCALE_DATE);						
+						
+$accept = <<<EOC
+<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_confirm">Accept</a>
 
+EOC;
+
+$reject = <<<EOR
+<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_reject" >Reject</a>
+EOR;
+						
+						if(!empty($aItems['id_profile']) && !empty($aItems['team_id']) && !empty($aItems['type']) && $aItems['invitation_type']=='match' ){
+						$profileName = getNickName($aItems['team_author_id']);
+                        $profileLink = getProfileLink($aItems['team_author_id']);
+						$match_team_admin = '<a href="'.$profileLink.'">'.$profileName.'</a>';	
+						$sActivity = "Invitation to match ".$match_link." from team admin ".$match_team_admin." on ";
+						} else {
+							$sActivity = "Invitation to match ".$match_link." from ".$match_admin." on ";
+						}
+					}elseif($aItems['invitation_type']=='team'){
+							$date_added = getLocaleDate( $aItems['when'], BX_DOL_LOCALE_DATE);
+							$team_title = $aItems['title'];
+							$team_uri = 'm/teams/view/'.$aItems['uri'];
+							$team_link = '<a href="'.$team_uri.'">'.$team_title.'</a>';
+							$profileName = getNickName($aItems['team_author_id']);
+							$profileLink = getProfileLink($aItems['team_author_id']);
+							$id_profile = $aItems['id_profile'];
+							$team_admin = '<a href="'.$profileLink.'">'.$profileName.'</a>';	
+							$sActivity = "Invitation to team ".$team_link." from ".$team_admin." on ";
+							
+$accept = <<<EOC
+<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$team_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_confirm">Accept</a>
+
+EOC;
+							
+$reject = <<<EOR
+<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$team_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_reject" >Reject</a>
+EOR;
+							
+					} else {
+						$sActivity = $sActivity;
+						$date_added = getLocaleDate( strtotime($aItems['date']), BX_DOL_LOCALE_DATE);
+					}
                     // define activity's sender;
-                    if($aItems['sender_id']) {
+                    if($aItems['sender_id']){
                         $aTemplateKeys = array(
                             'sender_thumb'    =>  get_member_icon($aItems['sender_id'], 'none'),
                             'event_caption'   => $sActivity,
                             'extra_styles'    => $sExtraStyles,
                             'extra_css_class' => $sExtraCssClass,
-                            'date_add'        => getLocaleDate( strtotime($aItems['date']), BX_DOL_LOCALE_DATE),
+                            'date_add'        => $date_added,
+							'bx_if:invitation' => array (
+								'condition' => $aItems['invitation_type']=='match' || $aItems['invitation_type']=='team',
+								'content' => array ('accept'=> $accept, 'reject' => $reject),
+							),
                         );
 
                         $sTemplateName = 'activity.html';
@@ -712,4 +801,5 @@ JS;
 
             return (!$inArray) ? $sOutputCode : $aProcessedActivites;
         }
+		
     }

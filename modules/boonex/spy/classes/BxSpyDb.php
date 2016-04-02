@@ -434,4 +434,29 @@
 
             return $iAffectedRows;
         }
+		
+		function getAllInvitationMatch($ownerId) {
+			
+			$sQuery = "SELECT * FROM `bx_matches_fans` WHERE confirmed=0 AND id_profile='".$ownerId."'";
+            return $this -> getAll($sQuery);
+		}
+		
+		function getAllInvitationTeam($ownerId) {
+			
+			$sQuery = "SELECT * FROM `bx_teams_fans` WHERE confirmed=0 AND id_profile='".$ownerId."'";
+            return $this -> getAll($sQuery);
+		}
+		
+		function getTeamInfo($teamId) {
+			
+			$sQuery = "SELECT title,uri,author_id FROM `bx_teams_main` WHERE `id`='".$teamId."'";
+            return $this -> getAll($sQuery);
+		}
+		
+		function getMatchInfo($matchId) {
+			
+			$sQuery = "SELECT title,uri,author_id FROM `bx_matches_main` WHERE `id`='".$matchId."'";
+            return $this -> getAll($sQuery);
+			
+		}
     }

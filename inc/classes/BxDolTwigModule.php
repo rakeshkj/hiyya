@@ -1856,7 +1856,6 @@ class BxDolTwigModule extends BxDolModule
             $aIds = array ();
             if (false !== bx_get('ids'))
                 $aIds = $this->_getCleanIdsArray (bx_get('ids'));
-
             $isShowConfirmedFansOnly = false;
             switch (bx_get('ajax_action')) {
                 case 'remove':
