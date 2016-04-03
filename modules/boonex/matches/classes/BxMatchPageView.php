@@ -346,7 +346,7 @@ class BxMatchPageView extends BxDolTwigPageView
             ),
         );
         bx_import ('BxTemplSearchResult');
-        $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit');
+        //$sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit');
         $aVars = array(
             'suffix' => 'unconfirmed_fans',
             'content' => $this->_profilesEdit($aProfiles),
