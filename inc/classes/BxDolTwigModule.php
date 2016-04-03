@@ -1849,13 +1849,14 @@ class BxDolTwigModule extends BxDolModule
     function _processFansActions ($aDataEntry, $iMaxFans = 1000)
     {
         header('Content-type:text/html;charset=utf-8');
-
-        if (false !== bx_get('ajax_action') && $this->isAllowedManageFans($aDataEntry) && 0 == strcasecmp($_SERVER['REQUEST_METHOD'], 'POST')) {
+        //&& $this->isAllowedManageFans($aDataEntry)
+        if (false !== bx_get('ajax_action')  && 0 == strcasecmp($_SERVER['REQUEST_METHOD'], 'POST')) {
 
             $iEntryId = $aDataEntry[$this->_oDb->_sFieldId];
             $aIds = array ();
             if (false !== bx_get('ids'))
                 $aIds = $this->_getCleanIdsArray (bx_get('ids'));
+			
             $isShowConfirmedFansOnly = false;
             switch (bx_get('ajax_action')) {
                 case 'remove':
@@ -1887,7 +1888,7 @@ class BxDolTwigModule extends BxDolModule
                 case 'confirm':
                     if ($this->_oDb->confirmFans($iEntryId, $aIds)) {
                         echo '<script type="text/javascript" language="javascript">
-                            document.location = "' . BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . "view/" . $aDataEntry[$this->_oDb->_sFieldUri] . '";
+                            window.location.reload();
                         </script>';
                         $aProfiles = array ();
                         $iNum = $this->_oDb->getFans($aProfiles, $iEntryId, true, 0, $iMaxFans, $aIds);

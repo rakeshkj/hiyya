@@ -722,12 +722,12 @@ JS;
 						$date_added = getLocaleDate( $aItems['when'], BX_DOL_LOCALE_DATE);						
 						
 $accept = <<<EOC
-<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_confirm">Accept</a>
+<button onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post',true); return false;" name="fans_confirm" value="Confirm" type="submit">Accept</button>
 
 EOC;
 
 $reject = <<<EOR
-<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_reject" >Reject</a>
+<button onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
 EOR;
 						
 						if(!empty($aItems['id_profile']) && !empty($aItems['team_id']) && !empty($aItems['type']) && $aItems['invitation_type']=='match' ){
@@ -750,12 +750,12 @@ EOR;
 							$sActivity = "Invitation to team ".$team_link." from ".$team_admin." on ";
 							
 $accept = <<<EOC
-<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$team_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_confirm">Accept</a>
+<button onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$team_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post',true); return false;" name="fans_confirm" value="Confirm" type="submit">Accept</button>
 
 EOC;
 							
 $reject = <<<EOR
-<a href="javascript:void(0);" onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$team_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post'); return false;" name="fans_reject" >Reject</a>
+<button onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$team_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
 EOR;
 							
 					} else {
