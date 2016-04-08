@@ -240,7 +240,10 @@ class BxMatchModule extends BxDolTwigModule
 	function _InviteTeamPlayers ($iEntryId, $sEmailTemplate, $iMaxEmailInvitations, $sMsgInvitationSent, $sMsgNoUsers, $sTitle, $teamId)
     {
         $iEntryId = (int)$iEntryId;
-        if (!($aDataEntry = $this->_oDb->getEntryByIdAndOwner($iEntryId, $this->_iProfileId, $this->isAdmin()))) {
+		
+		$team_details = $this->_oDb->getTeamDetails($teamId);
+		
+        if (!($aDataEntry = $this->_oDb->getEntryById($iEntryId, 0, $this->isAdmin()))) {
             $this->_oTemplate->displayPageNotFound ();
             return;
         }
