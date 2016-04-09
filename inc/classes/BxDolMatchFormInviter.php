@@ -17,6 +17,9 @@ class BxDolMatchFormInviter extends BxTemplFormView
         $aVisitorsPreapare = $oMain->_oDb->getTeamFans ($params[3],1);
         $aVisitors = array ();
         foreach ($aVisitorsPreapare as $k => $r) {
+			$user_check  = $oMain->_oDb->checkUserMatch($params[2],$r['ID'],$params[2],'p');
+			if(!empty($user_check))
+				continue;
             $aVisitors[] = array (
                 'Icon' => $GLOBALS['oFunctions']->getMemberIcon($r['ID'], 'left'),
                 'Link' => getProfileLink($r['ID']),

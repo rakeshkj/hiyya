@@ -446,6 +446,7 @@ JS;
         function serviceGetSpyBlock($sPage = 'index.php', $iProfileId = 0)
         {
             //-- process external vars --//
+			//$iProfileId = $this -> getUserId();
             return $this -> _getSpyBlock(array(
                 'page_url' => rawurlencode($sPage),
                 'profile' => (int)$iProfileId

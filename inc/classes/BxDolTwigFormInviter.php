@@ -24,7 +24,11 @@ class BxDolTwigFormInviter extends BxTemplFormView
 		$mGender = '';
 		$userGender = '';
 		$team_inviter['inviter_teams'] = '';
+		//echo '<pre>';print_r($aVisitorsPreapare);
         foreach ($aVisitorsPreapare as $k => $r) {
+			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$r['ID'],0,0);
+			if(!empty($user_check))
+				continue;
 			if($aDataEntry){
 				$userInfo = getProfileInfo($r['ID']);
 				$userDOB = $userInfo['DateOfBirth'];
@@ -69,6 +73,9 @@ class BxDolTwigFormInviter extends BxTemplFormView
 			$team_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
 			
 		foreach ($aTeamList as $key => $val) {
+			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$val['author_id'],$val['id'],'t');
+			if(!empty($user_check))
+				continue;
 			if($val['fans_count'] <= $team_capacity && $pgdetails[0]['min_players']>=$val['fans_count']) {
 				$aTeams[] = array (
                 'title' => $val['title'],

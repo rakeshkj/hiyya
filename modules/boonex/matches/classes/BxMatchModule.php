@@ -288,7 +288,7 @@ class BxMatchModule extends BxDolTwigModule
 			
             if (false !== bx_get('inviter_users') && is_array(bx_get('inviter_users')))  {	
 				$time = time();
-				$aInviteUsers = bx_get('inviter_users');;
+				$aInviteUsers = bx_get('inviter_users');
 				foreach($aInviteUsers as $team){
 					
 					$sQuery =
@@ -419,6 +419,7 @@ class BxMatchModule extends BxDolTwigModule
             $iSuccess = 0;
             // send invitation to registered members
             if ((false !== bx_get('inviter_users') && is_array(bx_get('inviter_users'))) || (false !== bx_get('inviter_teams') && is_array(bx_get('inviter_teams')))) {
+				$time = time();
 				if (false !== bx_get('inviter_teams') && is_array(bx_get('inviter_teams'))) {
 					if(!empty(bx_get('inviter_users'))){
 						$aInviteUsers = array_merge(bx_get('inviter_users'), bx_get('inviter_teams'));
@@ -426,7 +427,7 @@ class BxMatchModule extends BxDolTwigModule
 						$aInviteUsers = bx_get('inviter_teams');
 					}
 					
-				$time = time();
+				
 				$team_users = bx_get('inviter_teams');
 			
 				foreach($team_users as $team_user) {
@@ -455,6 +456,20 @@ class BxMatchModule extends BxDolTwigModule
 				}
 				} else {
 					$aInviteUsers = bx_get('inviter_users');
+					foreach ($aInviteUsers as $iRecipient) {
+					$sQuery =
+					"
+						INSERT IGNORE INTO
+							`bx_matches_fans`
+						SET
+							`id_entry` = '{$iEntryId}',
+							`id_profile` = '{$iRecipient}',
+							`when` = '{$time}',
+							`confirmed`  = 0,
+							`type`  = '0'
+					";
+					db_res($sQuery); 
+					}	
 				}
 				//echo '<pre>';print_r($aInviteUsers);die;
                 foreach ($aInviteUsers as $iRecipient) {

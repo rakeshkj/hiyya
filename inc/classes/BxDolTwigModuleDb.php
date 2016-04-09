@@ -461,5 +461,9 @@ class BxDolTwigModuleDb extends BxDolModuleDb
     {
         return $this->getAll ("SELECT * FROM `bx_matches_pg_main` WHERE  `id` = '" . $id . "'");
     }
+	
+	function checkUserMatch($entryid, $userid, $teamId,$type) {
+		return $this->getOne ("SELECT `id_profile` FROM `bx_matches_fans` WHERE `id_entry` = '$entryid' AND `id_profile` = '$userid' AND team_id='$teamId' AND type='$type' LIMIT 1");
+	}
 
 }
