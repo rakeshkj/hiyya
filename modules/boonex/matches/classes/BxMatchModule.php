@@ -290,14 +290,13 @@ class BxMatchModule extends BxDolTwigModule
 				$time = time();
 				$aInviteUsers = bx_get('inviter_users');
 				foreach($aInviteUsers as $team){
-					
 					$sQuery =
 					"
 						INSERT IGNORE INTO
 							`bx_matches_fans`
 						SET
 							`id_entry` = '{$iEntryId}',
-							`id_profile` = '{$team[0]}',
+							`id_profile` = '{$team}',
 							`team_id` = '{$teamId}',
 							`when` = '{$time}',
 							`confirmed`  = 0,
