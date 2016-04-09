@@ -307,7 +307,20 @@ class BxTeamsModule extends BxDolTwigModule
 					";
 					db_res($sQuery);
 					$iSuccess++;
-                }
+					
+					//Invitation to members for accept/reject
+					$sQuery =
+					"
+						INSERT IGNORE INTO
+							`bx_teams_fans`
+						SET
+							`id_entry` = '{$iEntryId}',
+							`id_profile` = '{$aRecipient['ID']}',
+							`when` = '{$time}',
+							`confirmed`  = 0,
+					";
+					db_res($sQuery); 
+				}
             }
 
             // send invitation to additional emails
