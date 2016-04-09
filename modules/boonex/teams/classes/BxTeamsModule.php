@@ -309,6 +309,7 @@ class BxTeamsModule extends BxDolTwigModule
 					$iSuccess++;
 					
 					//Invitation to members for accept/reject
+					$time = time();
 					$sQuery =
 					"
 						INSERT IGNORE INTO
@@ -317,7 +318,7 @@ class BxTeamsModule extends BxDolTwigModule
 							`id_entry` = '{$iEntryId}',
 							`id_profile` = '{$aRecipient['ID']}',
 							`when` = '{$time}',
-							`confirmed`  = 0,
+							`confirmed`  = 0
 					";
 					db_res($sQuery); 
 				}
