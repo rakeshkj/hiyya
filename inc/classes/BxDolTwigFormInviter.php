@@ -76,13 +76,13 @@ class BxDolTwigFormInviter extends BxTemplFormView
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$val['author_id'],$val['id'],'t');
 			if(!empty($user_check))
 				continue;
-			if($val['fans_count'] <= $team_capacity && $pgdetails[0]['min_players']>=$val['fans_count']) {
+			//if($val['fans_count'] <= $team_capacity && $pgdetails[0]['min_players']>=$val['fans_count']) {
 				$aTeams[] = array (
                 'title' => $val['title'],
                 'link' => "m/teams/view/".$val['uri'],
 				'ID' => $val['author_id'].'_'.$val['id'],
 				);  
-			}	
+			//}	
         }
 		$aVarsTeam = array (
             'bx_repeat:rows' => $aTeams,

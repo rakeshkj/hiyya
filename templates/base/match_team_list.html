@@ -1,4 +1,5 @@
 <div class="searchrow_block_simple bx-def-margin-thd __ext_css_class__">
+<div class="bx_sys_unit_checkbox bx-def-round-corners"> __input_check__ </div>
 	__thumbnail__
 	<div class="clear_both"></div>
 	Team Name : <a href="__link__" target="_blank">__team_name__</a> <br>
@@ -7,11 +8,11 @@
         <a href="__invite_link__" target="_blank">Invite Player</a><br><br><br>
 
     </bx_if:teamadmin>
-	<div class="clear_both"></div>
+	<div class="clear_both"></div><br><br>
 	<bx_if:teamPlayer>
-           
+           Team's Players
         <bx_repeat:team_player>
-		Team's Players
+		__input_check_player__
 		    __thumbplayer__
 		</bx_repeat:team_player>
 

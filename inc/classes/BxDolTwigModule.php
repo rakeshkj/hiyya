@@ -1856,16 +1856,22 @@ class BxDolTwigModule extends BxDolModule
             $aIds = array ();
             if (false !== bx_get('ids'))
                 $aIds = $this->_getCleanIdsArray (bx_get('ids'));
-			
             $isShowConfirmedFansOnly = false;
             switch (bx_get('ajax_action')) {
-                case 'remove':
+                case 'deletetmatch':
+                    $this->_oDb->removeFansPlayersMatch($iEntryId, bx_get('ids'));
+					echo '<script type="text/javascript" language="javascript">
+                            window.location.reload();
+                        </script>';
+						exit;
+                    break;
+				case 'remove':
                     $isShowConfirmedFansOnly = true;
                     if ($this->_oDb->removeFans($iEntryId, $aIds)) {
                         foreach ($aIds as $iProfileId)
                             $this->onEventFanRemove ($iEntryId, $iProfileId, $aDataEntry);
                     }
-                    break;
+                    break;	
                 case 'add_to_admins':
                     $isShowConfirmedFansOnly = true;
                     if ($this->isAllowedManageAdmins($aDataEntry) && $this->_oDb->addGroupAdmin($iEntryId, $aIds)) {

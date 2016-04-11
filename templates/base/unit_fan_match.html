@@ -1,25 +1,28 @@
 <div class="searchrow_block_simple sys_fan_unit bx-def-margin-sec-top-auto">
-	<!--bx_if:confirmed>
+	<bx_if:admin>
     <div class="bx_sys_unit_checkbox bx-def-round-corners">
-        <input type="checkbox" name="sys_fan_unit[]" value="__id__" />
+        <input type="checkbox" name="sys_fan_unit[]" value="__team_id__" />
     </div>
-	</bx_if:confirmed-->
-    <bx_if:admin>
-    <div class="sys_unit_admin">        
-        <i class="sys-icon key"></i>
-    </div>
-    </bx_if:admin>
+	</bx_if:admin>
     __thumb__
 	<div class="clear_both"></div>
 	Team Name : <a href="__link__" target="_blank">__team_name__</a> <br><br>
+	<bx_if:teamadmin>
+           
+        <a href="__invite_link__" target="_blank">Invite Player</a><br><br><br>
+
+    </bx_if:teamadmin>
 	
 	<bx_if:teamPlayer>
+	Team's Players <br>
            
         <bx_repeat:team_player>
-		Team's Players
-		    __thumbplayer__
+		<div class="searchrow_block_simple sys_fan_unit bx-def-margin-sec-top-auto">
+		__input_check_player__
+		    __thumbplayer__ 
+		</div><br>	
 		</bx_repeat:team_player>
-
+	    
     </bx_if:teamPlayer>
-	<div class="clear_both"></div>   
+	   
 </div>

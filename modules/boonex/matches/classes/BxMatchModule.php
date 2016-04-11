@@ -393,6 +393,7 @@ class BxMatchModule extends BxDolTwigModule
             exit;
 			
 		}
+		
 		//end here
         $this->_oTemplate->pageStart();
 
@@ -420,6 +421,14 @@ class BxMatchModule extends BxDolTwigModule
             if ((false !== bx_get('inviter_users') && is_array(bx_get('inviter_users'))) || (false !== bx_get('inviter_teams') && is_array(bx_get('inviter_teams')))) {
 				$time = time();
 				if (false !== bx_get('inviter_teams') && is_array(bx_get('inviter_teams'))) {
+					$invite_count = $this->_oDb->getMatchInvitationCount($iEntryId);
+					if($invite_count>=2){
+					echo '<script type="text/javascript" language="javascript">
+                           alert("You can not invite more than two teams, please delete to invite more");
+						   window.location = "'.$matchPath.'";
+                        </script>';
+					exit;
+					}
 					if(!empty(bx_get('inviter_users'))){
 						$aInviteUsers = array_merge(bx_get('inviter_users'), bx_get('inviter_teams'));
 					} else {

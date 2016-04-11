@@ -465,5 +465,23 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 	function checkUserMatch($entryid, $userid, $teamId,$type) {
 		return $this->getOne ("SELECT `id_profile` FROM `bx_matches_fans` WHERE `id_entry` = '$entryid' AND `id_profile` = '$userid' AND team_id='$teamId' AND type='$type' LIMIT 1");
 	}
-
+	
+	
+	function removeFansPlayersMatch ($iEntryId, $aProfileIds)
+    {
+        if (!$aProfileIds)
+            return false;
+		$aProfileIds = explode(',', $aProfileIds);
+		$aProfileIds = array_filter($aProfileIds);
+		//echo '<pre>';print_r($aProfileIds);
+		foreach ($aProfileIds as $aProfileId) {
+        $s = explode ('-', $aProfileId);
+			if(count($s)>1){
+				$iRet = $this->query ("DELETE FROM `" . $this->_sPrefix . $this->_sTableFans . "` WHERE `id_entry` = '$iEntryId' AND `id_profile` = '$s[1]' AND `team_id` = '$s[0]'");
+			} else {
+				$iRet = $this->query ("DELETE FROM `" . $this->_sPrefix . $this->_sTableFans . "` WHERE `id_entry` = '$iEntryId' AND `team_id` = '$s[0]'");
+			}
+		}
+        return $iRet;
+    }
 }
