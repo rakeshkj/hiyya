@@ -360,7 +360,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'type' => 'submit',
                 'name' => 'player_delete',
                 'value' => _t('_sys_btn_players_delete'),
-                'onclick' => "onclick=\"getHtmlData('sys_manage_items_delete_players_content', '{$sActionsUrl}deletetmatch&ids=' + sys_manage_items_get_unconfirmed_fans_ids(), false, 'post'); return false;\"",
+                'onclick' => "onclick=\"getHtmlData('sys_manage_items_delete_players_content', '{$sActionsUrl}deletetmatch&ids=' + sys_manage_items_get_unconfirmed_fans_ids(), false, 'post',true); return false;\"",
             )
         );
         bx_import ('BxTemplSearchResult');
@@ -442,7 +442,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'type' => 'submit',
                 'name' => 'player_delete',
                 'value' => _t('_sys_btn_players_delete'),
-                'onclick' => "onclick=\"getHtmlData('sys_manage_items_delete_players_content', '{$sActionsUrl}deletetmatch&ids=' + sys_manage_items_get_unconfirmed_fans_ids(), false, 'post'); return false;\"",
+                'onclick' => "onclick=\"getHtmlData('sys_manage_items_delete_players_content', '{$sActionsUrl}deletetmatch&ids=' + sys_manage_items_get_unconfirmed_fans_ids(), false, 'post',true); return false;\"",
             )
         );
         bx_import ('BxTemplSearchResult');

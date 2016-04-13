@@ -1860,10 +1860,8 @@ class BxDolTwigModule extends BxDolModule
             switch (bx_get('ajax_action')) {
                 case 'deletetmatch':
                     $this->_oDb->removeFansPlayersMatch($iEntryId, bx_get('ids'));
-					echo '<script type="text/javascript" language="javascript">
-                            window.location.reload();
-                        </script>';
-						exit;
+					header('Location: '.$_SERVER['REQUEST_URI']);
+					exit;
                     break;
 				case 'remove':
                     $isShowConfirmedFansOnly = true;
