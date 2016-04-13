@@ -243,10 +243,10 @@ class BxMatchModule extends BxDolTwigModule
 		
 		$team_details = $this->_oDb->getTeamDetails($teamId);
 		
-        if (!($aDataEntry = $this->_oDb->getEntryById($iEntryId, 0, $this->isAdmin()))) {
-            $this->_oTemplate->displayPageNotFound ();
-            return;
-        }
+        //if (!($aDataEntry = $this->_oDb->getEntryById($iEntryId, 0, $this->isAdmin()))) {
+            //$this->_oTemplate->displayPageNotFound ();
+           // return;
+        //}
 		//Check match capacity
 		$pgdetails = $this->_oDb->getPalgroundDetails($aDataEntry['playground']);
 		$player_count = $aDataEntry['fans_count'];
