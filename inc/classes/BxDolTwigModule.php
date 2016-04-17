@@ -1891,21 +1891,23 @@ class BxDolTwigModule extends BxDolModule
                     break;
                 case 'confirm':
                     if ($this->_oDb->confirmFans($iEntryId, $aIds)) {
-                        echo '<script type="text/javascript" language="javascript">
-                            window.location.reload();
-                        </script>';
                         $aProfiles = array ();
                         $iNum = $this->_oDb->getFans($aProfiles, $iEntryId, true, 0, $iMaxFans, $aIds);
                         foreach ($aProfiles as $aProfile) {
                             $this->onEventJoin ($iEntryId, $aProfile['ID'], $aDataEntry);
                             $this->onEventJoinConfirm ($iEntryId, $aProfile['ID'], $aDataEntry);
                         }
+						echo '<script type="text/javascript">location.reload(true);</script>';
+						
                     }
                     break;
                 case 'reject':
                     if ($this->_oDb->rejectFans($iEntryId, $aIds)) {
-                        foreach ($aIds as $iProfileId)
+                        foreach ($aIds as $iProfileId) {
                             $this->onEventJoinReject ($iEntryId, $iProfileId, $aDataEntry);
+						}
+						echo '<script type="text/javascript">location.reload(true);</script>';
+						
                     }
                     break;
                 case 'list':

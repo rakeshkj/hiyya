@@ -330,7 +330,6 @@ function getHtmlData( elem, url, callback, method, confirmation )
 
 	    var $block = $(elem);
 	    var $blockPos = $block.css('position');
-
 		$block.css('position', 'relative'); // set temporarily for displaying "loading icon"
 	    $block.bx_loading();
 
@@ -359,7 +358,9 @@ function getHtmlData( elem, url, callback, method, confirmation )
     			fPerform();
     		}
     	});
-
+	if(elem == '#sys_manage_items_unconfirmed_fans_content') {
+	location.reload(true);
+	}	
     	return;
     }
 

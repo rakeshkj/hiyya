@@ -16,15 +16,14 @@ class BxDolTwigFormInviter extends BxTemplFormView
         $aVisitorsPreapare = $oMain->_oDb->getPotentialVisitors ($oMain->_iProfileId);
 		$aTeamList = $oMain->_oDb->getPublicTeam($oMain->_iProfileId);
 		$pgdetails = $oMain->_oDb->getPalgroundDetails($aDataEntry['playground']);
-		//echo $oMain->_aModule;
-		//echo '<pre>';print_r($pgdetails);
+		
         $aVisitors = array ();
 		$userAge = '';
 		$match_person_age = '';
 		$mGender = '';
 		$userGender = '';
 		$team_inviter['inviter_teams'] = '';
-		//echo '<pre>';print_r($aVisitorsPreapare);
+		
         foreach ($aVisitorsPreapare as $k => $r) {
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$r['ID'],0,0);
 			if(!empty($user_check))

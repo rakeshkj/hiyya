@@ -11,21 +11,39 @@ bx_import('BxDolProfileFields');
  */
 class BxDolMatchFormInviter extends BxTemplFormView
 {
-    function BxDolMatchFormInviter ($oMain, $sMsgNoUsers)
+    function BxDolMatchFormInviter ($oMain, $sMsgNoUsers, $aDataEntry = null)
     {
 		$params= explode('/', $_GET['r']);
         $aVisitorsPreapare = $oMain->_oDb->getTeamFans ($params[3],1);
         $aVisitors = array ();
+		$user_check = '';
+		//echo '<pre>';print_r($aVisitorsPreapare);
         foreach ($aVisitorsPreapare as $k => $r) {
-			$user_check  = $oMain->_oDb->checkUserMatch($params[2],$r['ID'],$params[2],'p');
-			if(!empty($user_check))
+			$user_check  = $oMain->_oDb->checkUserMatch($params[2],$r['ID'],$params[3],'p');
+			$userInfo = getProfileInfo($r['ID']);
+			$userDOB = $userInfo['DateOfBirth'];
+			$userAge = $this->getAge($userDOB);
+			$userGender = $userInfo['Sex'];
+			$match_person_age = $aDataEntry['max_age'];
+			$match_person_gender = $aDataEntry['gender'];
+				if($match_person_gender==0) {
+					$mGender = 'male';
+				} elseif($match_person_gender==1) {
+					$mGender = 'female';
+				} elseif($match_person_gender==2) {
+					$mGender = 'any';
+				}
+				
+			if(!empty($user_check) )
 				continue;
+			if(($userAge < $match_person_age) && ($mGender == $userGender || $mGender == 'any')) {
             $aVisitors[] = array (
                 'Icon' => $GLOBALS['oFunctions']->getMemberIcon($r['ID'], 'left'),
                 'Link' => getProfileLink($r['ID']),
                 'NickName' => getNickName($r['ID']),
                 'ID' => $r['ID'],
             );
+			}
         }
         $aVars = array (
             'bx_repeat:rows' => $aVisitors,
@@ -67,4 +85,16 @@ class BxDolMatchFormInviter extends BxTemplFormView
 
         parent::BxTemplFormView ($aCustomForm);
     }
+	
+	
+	function getAge($dob){
+		if(!empty($dob)){
+			$birthdate = new DateTime($dob);
+			$today   = new DateTime('today');
+			$age = $birthdate->diff($today)->y;
+			return $age;
+		}else{
+			return 0;
+		}
+	}
 }

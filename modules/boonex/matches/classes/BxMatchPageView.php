@@ -383,8 +383,12 @@ class BxMatchPageView extends BxDolTwigPageView
 			
 			foreach ($aPlayersProfiles as $aPlayersProfile) {
 				
-				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => '<div class="bx_sys_unit_checkbox bx-def-round-corners">
-            <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>');
+				if($this->_oMain->_iProfileId==$aProfile['id_profile']) {
+					
+					$checkbox = '<div class="bx_sys_unit_checkbox bx-def-round-corners">
+            <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
+				}
+				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox );
 			}
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
 			
