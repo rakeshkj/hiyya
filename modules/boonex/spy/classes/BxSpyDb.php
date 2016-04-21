@@ -459,4 +459,8 @@
             return $this -> getAll($sQuery);
 			
 		}
+		
+		function getMatchConfirmedCount($matchid) {
+			return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='t' AND `confirmed` = '1'");	
+		}
     }

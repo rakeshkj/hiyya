@@ -199,7 +199,8 @@
             $sPageUrl  = $this -> sPathToModule;
             $iLastActivityId = (int) $iLastActivityId;
             $iProfileId = (int) $iProfileId;
-
+			$aRet = array();
+			$aProccesedActivites = array();
             // set filter;
             if($sType && $sType != 'all') {
                 $this -> oSearch -> aCurrent['restriction']['type']['value'] = process_db_input($sType, BX_TAGS_STRIP);
@@ -243,7 +244,7 @@
             // get data;
             $aActivites = $this -> oSearch -> getSearchData();
             $aProccesedActivites = $this -> _proccesActivites($aActivites, ' style="display:none" ', true);
-			count($aProccesedActivites);
+	
             $oJsonParser  = new Services_JSON();
             $aRet = array(
                 'events'        => $aProccesedActivites,
@@ -701,7 +702,7 @@ JS;
 				$teamInvitation['team_author_id'] = $team_info[0]['author_id'];
 				$aActivites[] = $teamInvitation;
 			}
-			//echo '<pre>';print_r($aActivites);die;
+			//echo '<pre>';print_r($aActivites);
             if( is_array($aActivites) ) {
                 foreach($aActivites as $iKey => $aItems) {
                     $aParams  = unserialize($aItems['params']);
@@ -720,7 +721,22 @@ JS;
 						$profileName = getNickName($aItems['match_author_id']);
                         $profileLink = getProfileLink($aItems['match_author_id']);
 						$match_admin = '<a href="'.$profileLink.'">'.$profileName.'</a>';
-						$date_added = getLocaleDate( $aItems['when'], BX_DOL_LOCALE_DATE);						
+						$date_added = getLocaleDate( $aItems['when'], BX_DOL_LOCALE_DATE);
+
+						$match_confi_count = $this -> _oDb ->getMatchConfirmedCount($aItems['id_entry']);	
+						if($match_confi_count>=2){
+							
+$accept = <<<EOV
+<button onclick="alert('Invitation expired.');return false;" value="Confirm">Accept</button>
+EOV;
+
+$reject = <<<EOVV
+<button onclick="alert('Invitation expired.');return false;" value="Reject">Reject</button>
+
+EOVV;
+
+
+						} else {
 						
 $accept = <<<EOC
 <button onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=confirm&amp;ids={$id_profile}', false, 'post',true); return false;" name="fans_confirm" value="Confirm" type="submit">Accept</button>
@@ -730,6 +746,8 @@ EOC;
 $reject = <<<EOR
 <button onclick="getHtmlData('sys_manage_items_unconfirmed_fans_content', '{$match_uri}?ajax_action=reject&amp;ids={$id_profile}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
 EOR;
+
+						}
 						
 						if(!empty($aItems['id_profile']) && !empty($aItems['team_id']) && !empty($aItems['type']) && $aItems['invitation_type']=='match' ){
 						$profileName = getNickName($aItems['team_author_id']);
