@@ -1859,7 +1859,7 @@ class BxDolTwigModule extends BxDolModule
             $isShowConfirmedFansOnly = false;
             switch (bx_get('ajax_action')) {
                 case 'deletetmatch':
-                    $this->_oDb->removeFansPlayersMatch($iEntryId, bx_get('ids'));
+                    $this->_oDb->removeFansPlayersMatch($iEntryId, bx_get('ids'),$aDataEntry['match_type']);
 					header('Location: '.$_SERVER['REQUEST_URI']);
 					exit;
                     break;

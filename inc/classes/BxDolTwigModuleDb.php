@@ -467,7 +467,7 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 	}
 	
 	
-	function removeFansPlayersMatch ($iEntryId, $aProfileIds)
+	function removeFansPlayersMatch ($iEntryId, $aProfileIds,$match_type)
     {
         if (!$aProfileIds)
             return false;
@@ -476,11 +476,16 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 		//echo '<pre>';print_r($aProfileIds);
 		foreach ($aProfileIds as $aProfileId) {
         $s = explode ('-', $aProfileId);
+		if($match_type == 0) {
+			$iRet = $this->query ("DELETE FROM `" . $this->_sPrefix . $this->_sTableFans . "` WHERE `id_entry` = '$iEntryId' AND `id_profile` = '$s[0]' AND `team_id` = '0'");
+			
+		} else {
 			if(count($s)>1){
 				$iRet = $this->query ("DELETE FROM `" . $this->_sPrefix . $this->_sTableFans . "` WHERE `id_entry` = '$iEntryId' AND `id_profile` = '$s[1]' AND `team_id` = '$s[0]'");
 			} else {
 				$iRet = $this->query ("DELETE FROM `" . $this->_sPrefix . $this->_sTableFans . "` WHERE `id_entry` = '$iEntryId' AND `team_id` = '$s[0]'");
 			}
+		}	
 		}
         return $iRet;
     }

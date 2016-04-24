@@ -408,7 +408,7 @@ class BxMatchModule extends BxDolTwigModule
         bx_import('BxDolTwigFormInviter');
         $oForm = new BxDolTwigFormInviter ($this, $sMsgNoUsers, $aDataEntry);
         $oForm->initChecker();
-			
+			//print_r($aDataEntry['match_type']);
         if ($oForm->isSubmittedAndValid ()) {
 
             $aInviter = getProfileInfo($this->_iProfileId);
@@ -442,7 +442,32 @@ class BxMatchModule extends BxDolTwigModule
 					$teamuser = explode('_', $team_user);
 					$teams[] = $teamuser;
 				}
-				//echo '<pre>';print_r($teams);
+				
+				if($aDataEntry['match_type'] == 0) {
+					
+					foreach ($teams as $team) {
+						$team_fans = $this->_oDb->getTeamFans($team[1],1);
+						foreach ($team_fans as $team_fan){
+							$individual_players[$team_fan['ID']] = $team_fan['ID'];
+						}
+						  
+					}
+					
+					foreach ($individual_players as $individual_player) {
+					$sQuery =
+					"
+						INSERT IGNORE INTO
+							`bx_matches_fans`
+						SET
+							`id_entry` = '{$iEntryId}',
+							`id_profile` = '{$individual_player}',
+							`when` = '{$time}',
+							`confirmed`  = 0,
+							`type`  = '0'
+					";
+					db_res($sQuery); 
+					}	
+				} else {
 				foreach($teams as $team){
 					
 					$sQuery =
@@ -461,6 +486,7 @@ class BxMatchModule extends BxDolTwigModule
 
 					
 					
+				}
 				}
 				} else {
 					$aInviteUsers = bx_get('inviter_users');

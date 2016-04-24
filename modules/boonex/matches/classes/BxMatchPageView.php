@@ -350,7 +350,11 @@ class BxMatchPageView extends BxDolTwigPageView
 	function _blockFansUnconfirmed($iFansLimit = 1000)
     {
         $aProfiles = array ();
+		if($this->aDataEntry['match_type'] == 0){
+			$iNum = $this->_oDb->getMatchTeamUnconfirmed($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0');
+		} else {
         $iNum = $this->_oDb->getMatchTeamUnconfirmed($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't');
+		}
         if (!$iNum)
             return MsgBox(_t('_Empty'));
 
@@ -365,6 +369,7 @@ class BxMatchPageView extends BxDolTwigPageView
         );
         bx_import ('BxTemplSearchResult');
         $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit');
+		//echo '<pre>';print_r($aProfiles);
         $aVars = array(
             'suffix' => 'unconfirmed_fans',
             'content' => $this->_profilesEdit($aProfiles),
@@ -420,14 +425,20 @@ class BxMatchPageView extends BxDolTwigPageView
 					)
                 ),
             );
-			if($i==0) {
-			$sResult .= '<div><b>Home</b></div>';
-			} elseif($i==1) {
-				
-				$sResult .= '<div><b>Away</b></div>';
-			} 
-            $sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
-			$i++;
+			if($this->aDataEntry['match_type'] == 1){
+				if($i==0) {
+				$sResult .= '<div><b>Home</b></div>';
+				} elseif($i==1) {
+					
+					$sResult .= '<div><b>Away</b></div>';
+				} 
+			$i++;	
+			$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);	
+			} else {
+            $sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match_practice', $aVars);
+			}
+			
+
         }
 
         return $isCenterContent ? $GLOBALS['oFunctions']->centerContent ($sResult, '.sys_fan_unit') : $sResult;
@@ -436,7 +447,11 @@ class BxMatchPageView extends BxDolTwigPageView
     {
         
         $aProfiles = array ();
+		if($this->aDataEntry['match_type'] == 0){ 
+		$iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',1);
+		} else {
         $iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't',1);
+		}
         if (!$iNum)
             return MsgBox(_t('_Empty'));
 
@@ -505,13 +520,18 @@ class BxMatchPageView extends BxDolTwigPageView
 					)
                 ),
             );
-			if($i==0) {
-			$sResult .= '<div><b>Home</b></div>';
-			} elseif($i==1) {
+			if($this->aDataEntry['match_type'] == 1){ 
+				if($i==0) {
+				$sResult .= '<div><b>Home</b></div>';
+				} elseif($i==1) {
+					
+					$sResult .= '<div><b>Away</b></div>';
+				} 
+				$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
+			} else {
 				
-				$sResult .= '<div><b>Away</b></div>';
-			} 
-            $sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
+				$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match_practice', $aVars);
+			}	
 			$i++;
         }
 
