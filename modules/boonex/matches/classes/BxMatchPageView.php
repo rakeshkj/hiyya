@@ -353,7 +353,7 @@ class BxMatchPageView extends BxDolTwigPageView
 		if($this->aDataEntry['match_type'] == 0){
 			$iNum = $this->_oDb->getMatchTeamUnconfirmedPractice($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',0);
 		} else {
-        $iNum = $this->_oDb->getMatchTeamUnconfirmed($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't');
+			$iNum = $this->_oDb->getMatchTeamUnconfirmed($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't');
 		}
         if (!$iNum)
             return MsgBox(_t('_Empty'));
@@ -368,7 +368,9 @@ class BxMatchPageView extends BxDolTwigPageView
             )
         );
         bx_import ('BxTemplSearchResult');
-        $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit');
+		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId) {
+        $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit', false);
+		}
 		//echo '<pre>';print_r($aProfiles);
         $aVars = array(
             'suffix' => 'unconfirmed_fans',
@@ -465,7 +467,9 @@ class BxMatchPageView extends BxDolTwigPageView
             )
         );
         bx_import ('BxTemplSearchResult');
-        $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit');
+		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId) {
+        $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit', false);
+		}
         $aVars = array(
             'suffix' => 'unconfirmed_fans',
             'content' => $this->_profilesEditFanConfirm($aProfiles),
