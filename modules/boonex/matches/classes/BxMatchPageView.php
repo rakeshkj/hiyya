@@ -351,7 +351,7 @@ class BxMatchPageView extends BxDolTwigPageView
     {
         $aProfiles = array ();
 		if($this->aDataEntry['match_type'] == 0){
-			$iNum = $this->_oDb->getMatchTeamUnconfirmed($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0');
+			$iNum = $this->_oDb->getMatchTeamUnconfirmedPractice($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',0);
 		} else {
         $iNum = $this->_oDb->getMatchTeamUnconfirmed($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 2, '', 't');
 		}

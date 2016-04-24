@@ -112,6 +112,17 @@ class BxMatchDb extends BxDolTwigModuleDb
         $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID`  AND `f`.`type` = '$type' AND `p`.`Status` = 'Active' $sFilter) ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
         return $this->getOne("SELECT FOUND_ROWS()");
     }
+	function getMatchTeamUnconfirmedPractice(&$aProfiles, $iEntryId, $iStart, $iMaxNum, $aFilter = array(), $type, $isConfirmed)
+    {
+        $isConfirmed = $isConfirmed ? 1 : 0;
+        $sFilter = '';
+        if ($aFilter) {
+            $s = implode (' OR `f`.`id_profile` = ', $aFilter);
+            $sFilter = ' AND (`f`.`id_profile` = ' . $s . ') ';
+        }
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID`  AND `f`.`type` = '$type' AND `f`.`confirmed` = '$isConfirmed' AND `p`.`Status` = 'Active' $sFilter) ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
+        return $this->getOne("SELECT FOUND_ROWS()");
+    }
 	function getTeamDetails($id) {
 		return $this->getAll ("SELECT * FROM `bx_teams_main` WHERE id='".$id."' ");	
 	}
