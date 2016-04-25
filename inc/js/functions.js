@@ -323,6 +323,7 @@ function createXmlHttpObj()
 
 function getHtmlData( elem, url, callback, method, confirmation )
 {
+
 	var fPerform = function() {
 	    // in most cases it is element ID, in other cases - object of jQuery
 	    if (typeof elem == 'string')
@@ -341,6 +342,14 @@ function getHtmlData( elem, url, callback, method, confirmation )
 		        if(typeof callback == 'function')
 				    callback.apply($block);
 			});
+			if(elem == '#sys_manage_items_unconfirmed_fans_content') {
+			setTimeout(
+			  function() 
+			  {
+					location.reload(true);
+					
+			  }, 200);
+			}
 		}
 	    else {
 			$block.load(url + '&_r=' + Math.random(), function() {
@@ -358,9 +367,7 @@ function getHtmlData( elem, url, callback, method, confirmation )
     			fPerform();
     		}
     	});
-	if(elem == '#sys_manage_items_unconfirmed_fans_content') {
-	location.reload(true);
-	}	
+		
     	return;
     }
 
