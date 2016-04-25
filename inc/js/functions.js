@@ -342,7 +342,7 @@ function getHtmlData( elem, url, callback, method, confirmation )
 		        if(typeof callback == 'function')
 				    callback.apply($block);
 			});
-			if(elem == '#sys_manage_items_unconfirmed_fans_content') {
+			if(elem == '#sys_manage_items_unconfirmed_fans_content' || elem == '#sys_manage_items_delete_players_content') {
 			setTimeout(
 			  function() 
 			  {
