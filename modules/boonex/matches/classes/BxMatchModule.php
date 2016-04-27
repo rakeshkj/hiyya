@@ -249,7 +249,7 @@ class BxMatchModule extends BxDolTwigModule
         }
 		//Check match capacity
 		$pgdetails = $this->_oDb->getPalgroundDetails($aDataEntry['playground']);
-		$player_count = $aDataEntry['fans_count'];
+		$player_count = $this->_oDb->getMatchPlayersCount($aDataEntry['id'], $aDataEntry['match_type']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$matchPath = BX_DOL_URL_ROOT .  $this->_oConfig->getBaseUri().'view/'.$aDataEntry['uri'];
@@ -381,7 +381,7 @@ class BxMatchModule extends BxDolTwigModule
         }
 		//Check match capacity
 		$pgdetails = $this->_oDb->getPalgroundDetails($aDataEntry['playground']);
-		$player_count = $aDataEntry['fans_count'];
+		$player_count = $this->_oDb->getMatchPlayersCount($aDataEntry['id'], $aDataEntry['match_type']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$matchPath = BX_DOL_URL_ROOT .  $this->_oConfig->getBaseUri().'view/'.$aDataEntry['uri'];
@@ -656,7 +656,7 @@ class BxMatchModule extends BxDolTwigModule
 		}
 		//Check match capacity
 		$pgdetails = $this->_oDb->getPalgroundDetails($aDataEntry['playground']);
-		$player_count = $aDataEntry['fans_count'];
+		$player_count = $this->_oDb->getMatchPlayersCount($aDataEntry['id'], $aDataEntry['match_type']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		if($max_player_match == $player_count) {
