@@ -24,7 +24,6 @@ class BxMatchTemplate extends BxDolTwigTemplate
     function unit ($aData, $sTemplateName, &$oVotingView, $isShort = false)
     {
 		$match_detail = $this->_oDb->getMatchDetails($aData['id']);
-		//echo '<pre>';print_r($aData);
 		$match_type =  ($match_detail['match_type'] == 0)?'Practice':'Teams';
 		$join_type =  ($match_detail['join_confirmation'] == 0)?'Open':'Invitation Only';
 		$match_status = $this->_oDb->getMatchStatus($match_detail);

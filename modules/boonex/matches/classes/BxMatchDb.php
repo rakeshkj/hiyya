@@ -68,7 +68,7 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getMatchDetails ($id)
     {
-        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time,playground FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 	
 	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type='')
@@ -138,8 +138,9 @@ class BxMatchDb extends BxDolTwigModuleDb
 	}
 	
 	function getMatchStatus($aData) {
-		
+		//echo '<pre>';print_r($aData);
 		$player_count = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
+		$pgdetails = $this->getPalgroundDetails($aData['playground']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$start_time = $aData['start_date']+($aData['match_time']*60*60);
