@@ -24,8 +24,11 @@ class BxMatchTemplate extends BxDolTwigTemplate
     function unit ($aData, $sTemplateName, &$oVotingView, $isShort = false)
     {
 		$match_detail = $this->_oDb->getMatchDetails($aData['id']);
-		$match_type =  ($match_detail[0]['match_type'] == 0)?'Practice':'Teams';
-		$join_type =  ($match_detail[0]['join_confirmation'] == 0)?'Open':'Invitation Only';
+		//echo '<pre>';print_r($aData);
+		$match_type =  ($match_detail['match_type'] == 0)?'Practice':'Teams';
+		$join_type =  ($match_detail['join_confirmation'] == 0)?'Open':'Invitation Only';
+		$match_status = $this->_oDb->getMatchStatus($match_detail);
+		$match_players_count = $this->_oDb->getMatchPlayersCount($aData['id'], $match_detail['match_type']);
         if (null == $this->_oMain)
             $this->_oMain = BxDolModule::getInstance('BxMatchModule');
 
@@ -49,7 +52,8 @@ class BxMatchTemplate extends BxDolTwigTemplate
 			'match_type' => $match_type,
 			'join_type' => $join_type,
             'created' => defineTimeInterval($aData['created']),
-            'fans_count' => $aData['fans_count'],
+            'fans_count' => $match_players_count,
+			'match_status' => $match_status,
             'country_city' => $this->_oMain->_formatLocation($aData),
             'snippet_text' => $this->_oMain->_formatSnippetText($aData),
             'bx_if:full' => array (

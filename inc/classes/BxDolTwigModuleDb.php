@@ -131,7 +131,16 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 
         return true;
     }
-
+	function cancelEntryByIdAndOwner ($iId, $iOwner, $isAdmin)
+    {
+        $sWhere = '';
+        if (!$isAdmin)
+            $sWhere = " AND `{$this->_sFieldAuthorId}` = '$iOwner' ";
+        if (!($iRet = $this->query ("UPDATE `" . $this->_sPrefix . $this->_sTableMain . "` SET `match_status` ='0' WHERE `{$this->_sFieldId}` = $iId $sWhere LIMIT 1")))
+            return false;
+		
+        return true;
+    }
     function markAsFeatured ($iId)
     {
         return $this->query ("UPDATE `" . $this->_sPrefix . $this->_sTableMain . "` SET `{$this->_sFieldFeatured}` = (`{$this->_sFieldFeatured}` - 1)*(`{$this->_sFieldFeatured}` - 1) WHERE `{$this->_sFieldId}` = $iId LIMIT 1");

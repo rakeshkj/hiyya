@@ -80,6 +80,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleSubscribe' => $aSubscribeButton['title'],
                 'TitleEdit' => $this->_oMain->isAllowedEdit($this->aDataEntry) ? _t('_bx_matches_action_title_edit') : '',
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
+				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
                 'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
@@ -130,21 +131,9 @@ class BxMatchPageView extends BxDolTwigPageView
 		$pgdetails = $this->_oDb->getPalgroundDetails($pg_id);
 		$pglink = $this->_oMain->_oConfig->getBaseUri().'pgview/'.$pgdetails[0]['uri'];
 		$pg_block_booking  = $aData['block_booking'];
-		//$indoor_type = $aData['indoor'];
+		//echo '<pre>';print_r($aData);
 		$gender_type = $aData['gender'];
-		$player_count = $aData['fans_count'];
-		$min_player_match = $pgdetails[0]['min_players'];
-		$max_player_match = $pgdetails[0]['max_players'];
-		if($max_player_match == $player_count) {
-			$match_status = 'Match Max players capacity reached';
-			
-		} elseif($min_player_match == $player_count) {
-			
-			$match_status = 'Scheduled';
-		} else {
-			
-			$match_status = 'Waiting for players';
-		}
+		$match_status = $this->_oDb->getMatchStatus($aData);
 		if($pg_type ==0 ){
 			$playground ='Grass';
 		} elseif($pg_type ==1) {

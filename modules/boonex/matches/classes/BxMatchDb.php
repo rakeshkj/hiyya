@@ -68,7 +68,7 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getMatchDetails ($id)
     {
-        return $this->getAll ("SELECT match_type, join_confirmation FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 	
 	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type='')
@@ -128,6 +128,41 @@ class BxMatchDb extends BxDolTwigModuleDb
 	}
 	
 	function getMatchInvitationCount($matchid) {
+		
 		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='t'");	
+	}
+	
+	function getMatchPlayersCount($matchid, $type) {
+		$match_type = ($type == 0) ? 0 : 'p';
+		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1");	
+	}
+	
+	function getMatchStatus($aData) {
+		
+		$player_count = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
+		$min_player_match = $pgdetails[0]['min_players'];
+		$max_player_match = $pgdetails[0]['max_players'];
+		$start_time = $aData['start_date']+($aData['match_time']*60*60);
+		$current_time = time();
+		$time_after_hour = $start_time+3600;
+		if($max_player_match == $player_count) {
+			$match_status = 'Match Max players capacity reached';
+		} elseif($player_count >=$min_player_match) {
+			$match_status = 'Scheduled';
+		} elseif($player_count < $min_player_match) {
+			$match_status = 'Waiting for players';
+		}
+		if($current_time>=$start_time) {
+			$match_status = 'Kick off';
+		}
+		if($current_time>=$time_after_hour) {
+			$match_status = 'Time Up/ Waiting for Results';
+		}
+		if($aData['match_status']==0) {
+			$match_status = 'Cancelled';
+		}
+		
+		return $match_status;
+		
 	}
 }

@@ -776,7 +776,33 @@ class BxDolTwigModule extends BxDolModule
         echo MsgBox(_t('_Error Occured')) . genAjaxyPopupJS($iEntryId, 'ajaxy_popup_result_div');
         exit;
     }
+	function _actionCancel ($iEntryId, $sMsgSuccess)
+    {
+        header('Content-type:text/html;charset=utf-8');
 
+        $iEntryId = (int)$iEntryId;
+        if (!($aDataEntry = $this->_oDb->getEntryByIdAndOwner($iEntryId, $this->_iProfileId, $this->isAdmin()))) {
+            echo MsgBox(_t('_sys_request_page_not_found_cpt')) . genAjaxyPopupJS($iEntryId, 'ajaxy_popup_result_div');
+            exit;
+        }
+
+        if (!$this->isAllowedDelete($aDataEntry) || 0 != strcasecmp($_SERVER['REQUEST_METHOD'], 'POST')) {
+            echo MsgBox(_t('_Access denied')) . genAjaxyPopupJS($iEntryId, 'ajaxy_popup_result_div');
+            exit;
+        }
+
+        if ($this->_oDb->cancelEntryByIdAndOwner($iEntryId, $this->_iProfileId, $this->isAdmin())) {
+            $this->isAllowedDelete($aDataEntry, true); // perform action
+            $this->onEventCancel ($iEntryId, $aDataEntry);
+            $sRedirect = BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry[$this->_oDb->_sFieldUri];
+            $sJQueryJS = genAjaxyPopupJS($iEntryId, 'ajaxy_popup_result_div', $sRedirect);
+            echo MsgBox(_t($sMsgSuccess)) . $sJQueryJS;
+            exit;
+        }
+
+        echo MsgBox(_t('_Error Occured')) . genAjaxyPopupJS($iEntryId, 'ajaxy_popup_result_div');
+        exit;
+    }
     function _actionMarkFeatured ($iEntryId, $sMsgSuccessAdd, $sMsgSuccessRemove)
     {
         header('Content-type:text/html;charset=utf-8');
@@ -1662,7 +1688,12 @@ class BxDolTwigModule extends BxDolModule
         $oAlert = new BxDolAlerts($this->_sPrefix, 'delete', $iEntryId, $this->_iProfileId);
         $oAlert->alert();
     }
-
+	function onEventCancel ($iEntryId, $aDataEntry = array())
+    {
+        // arise alert
+        $oAlert = new BxDolAlerts($this->_sPrefix, 'Cancel', $iEntryId, $this->_iProfileId);
+        $oAlert->alert();
+    }
     function onEventMarkAsFeatured ($iEntryId, $aDataEntry)
     {
         // arise alert
