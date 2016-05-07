@@ -748,6 +748,45 @@ class BxDolTwigModule extends BxDolModule
         echo MsgBox(_t('_Error Occured')) . genAjaxyPopupJS($iEntryId, 'ajaxy_popup_result_div');
         exit;
     }
+	
+	function _actionMatchResult ($iEntryId, $sTitle)
+    {
+        $iEntryId = (int)$iEntryId;
+        if (!($aDataEntry = $this->_oDb->getEntryById($iEntryId))) {
+            $this->_oTemplate->displayPageNotFound ();
+            return;
+        }
+        $this->_oTemplate->pageStart();
+
+        bx_import ('ResultFormAdd', $this->_aModule);
+        $sClass = $this->_aModule['class_prefix'] . 'ResultFormAdd';
+        $oForm = new $sClass ($this, $this->_iProfileId, $iEntryId);
+        $oForm->initChecker();
+
+        if ($oForm->isSubmittedAndValid ()) {
+
+            $aValsAdd = array ('match_id' => $iEntryId,'date_created' => date('Y-m-d'), );
+            if ($oForm->insert ($aValsAdd)) {
+                header ('Location:' . BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry[$this->_oDb->_sFieldUri]);
+                exit;
+
+            } else {
+
+                echo MsgBox(_t('_Error Occured'));
+
+            }
+
+        } else {
+
+            echo $oForm->getCode ();
+
+        }
+
+        $this->_oTemplate->addJs ('main.js');
+        $this->_oTemplate->addCss ('main.css');
+        $this->_oTemplate->addCss ('forms_extra.css');
+        $this->_oTemplate->pageCode($sTitle);
+    }
 	//End here
     function _actionDelete ($iEntryId, $sMsgSuccess)
     {

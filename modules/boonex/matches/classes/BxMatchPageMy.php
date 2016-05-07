@@ -141,8 +141,8 @@ class BxMatchPageMy extends BxDolPageView
     {
         bx_import ('PlaygroundFormAdd',$this->_aModule);
         $sClass = 'BxMatchPlaygroundFormAdd';
-        $oForm = new $sClass ($this, $this->_aProfile['ID']);
 		//echo '<pre>';print_r($oForm);die;
+        $oForm = new $sClass ($this, $this->_aProfile['ID']);
         $oForm->initChecker();
 
         if ($oForm->isSubmittedAndValid ()) {
@@ -161,10 +161,8 @@ class BxMatchPageMy extends BxDolPageView
                 //$this->isAllowedAdd(true); // perform action
 
                 $oForm->processMedia($iEntryId, $this->_aProfile['ID']);
-//echo '<pre>';print_r($this->_aMedia);die;
 
                 $aDataEntry = $this->_oDb->getEntryByIdAndOwner($iEntryId, $this->_aProfile['ID'], $this->isAdmin());
-				//echo '<pre>';print_r($aDataEntry);die;
 
                 $this->_oDb->updatePgPhoto($iEntryId);
                 if (!$sRedirectUrl)
