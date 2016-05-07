@@ -104,7 +104,7 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 					'type' => 'checkbox_set',
 					'name' => 'home_team_players',
 					'caption' => _t('_home_team_players'),
-					'value' => $sProfileThumbPlayer['home'],
+					'value' => true,
 					'values' => $sProfileThumbPlayer['home'],
 					'attrs' => array()
 				),
@@ -112,7 +112,7 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 					'type' => 'checkbox_set',
 					'name' => 'away_team_players',
 					'caption' => _t('_away_team_players'),
-					'value' => $sProfileThumbPlayer['away'],
+					'value' => true,
 					'values' => $sProfileThumbPlayer['away'],
 					'attrs' => array()
 				),
