@@ -139,14 +139,18 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function getMatchResult($matchid) {
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."'");	
 	}
+	function getMatchResultPlayed($matchid) {
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 1");	
+	}
 	function getMatchStatus($aData) {
 		//echo '<pre>';print_r($aData);
 		$player_count = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
 		$match_result = $this->getMatchResult($aData['id']);
+		$match_result_played = $this->getMatchResultPlayed($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
-		$match_max_result_time = $this->_oDb->getParam('bx_matches_max_result_time');
+		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
 		$start_time = $aData['start_date']+($aData['match_time']*60*60);
 		$current_time = time();
 		$time_after_hour = $start_time+3600;
@@ -166,8 +170,10 @@ class BxMatchDb extends BxDolTwigModuleDb
 		}
 		if($current_time>=$submit_result_duraion) {
 			if($match_result<=0) {
-			$match_status = 'No Match Result';
-			}
+				$match_status = 'No Match Result';
+			} elseif($match_result_played>=1) {
+				$match_status = 'Waiting for Result Confirmation';
+			}      
 		}
 		if($aData['match_status']==0) {
 			$match_status = 'Cancelled';
