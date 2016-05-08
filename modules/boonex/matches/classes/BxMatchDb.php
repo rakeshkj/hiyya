@@ -136,16 +136,21 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$match_type = ($type == 0) ? 0 : 'p';
 		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1");	
 	}
-	
+	function getMatchResult($matchid) {
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."'");	
+	}
 	function getMatchStatus($aData) {
 		//echo '<pre>';print_r($aData);
 		$player_count = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
+		$match_result = $this->getMatchResult($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
+		$match_max_result_time = $this->_oDb->getParam('bx_matches_max_result_time');
 		$start_time = $aData['start_date']+($aData['match_time']*60*60);
 		$current_time = time();
 		$time_after_hour = $start_time+3600;
+		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
 		if($max_player_match == $player_count) {
 			$match_status = 'Match Max players capacity reached';
 		} elseif($player_count >=$min_player_match) {
@@ -157,7 +162,12 @@ class BxMatchDb extends BxDolTwigModuleDb
 			$match_status = 'Kick off';
 		}
 		if($current_time>=$time_after_hour) {
-			$match_status = 'Time Up/ Waiting for Results';
+			$match_status = 'Time Up/Waiting for Results';
+		}
+		if($current_time>=$submit_result_duraion) {
+			if($match_result<=0) {
+			$match_status = 'No Match Result';
+			}
 		}
 		if($aData['match_status']==0) {
 			$match_status = 'Cancelled';
