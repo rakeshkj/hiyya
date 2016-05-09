@@ -153,7 +153,8 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
 		$start_time = $aData['start_date']+($aData['match_time']*60*60);
 		$current_time = time();
-		$time_after_hour = $start_time+3600;
+		$match_time_after_start = $this->getParam('bx_matches_end_time_after_start');
+		$time_after_hour = $start_time+$match_time_after_start;
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
 		if($max_player_match == $player_count) {
 			$match_status = 'Match Max players capacity reached';
