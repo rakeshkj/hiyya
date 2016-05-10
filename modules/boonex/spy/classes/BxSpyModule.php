@@ -724,7 +724,7 @@ JS;
 						$date_added = getLocaleDate( $aItems['when'], BX_DOL_LOCALE_DATE);
 
 						$match_confi_count = $this -> _oDb ->getMatchConfirmedCount($aItems['id_entry']);	
-						if($match_confi_count>=2){
+						if($match_confi_count>=2 && !(!empty($aItems['id_profile']) && !empty($aItems['team_id']) && !empty($aItems['type']) && $aItems['invitation_type']=='match')){
 							
 $accept = <<<EOV
 <button onclick="alert('Invitation expired.');return false;" value="Confirm">Accept</button>
