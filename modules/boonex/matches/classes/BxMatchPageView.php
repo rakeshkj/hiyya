@@ -69,6 +69,7 @@ class BxMatchPageView extends BxDolTwigPageView
             $aSubscribeButton = $oSubscription->getButton($this->_oMain->_iProfileId, 'bx_matches', '', (int)$this->aDataEntry['id']);
 
             $isFan = $this->_oDb->isFan((int)$this->aDataEntry['id'], $this->_oMain->_iProfileId, 0) || $this->_oDb->isFan((int)$this->aDataEntry['id'], $this->_oMain->_iProfileId, 1);
+			$match_type = $this->aDataEntry['match_type'];
 			$match_status = $this->_oDb->getMatchStatus($this->aDataEntry);
             $aInfo = array (
                 'BaseUri' => $this->_oMain->_oConfig->getBaseUri(),
@@ -82,7 +83,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
 				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
 				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : '',
-                'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
+                'TitleJoin' => ($this->_oMain->isAllowedJoin($this->aDataEntry) && $match_type == 0) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
                 'TitleShare' => $this->_oMain->isAllowedShare($this->aDataEntry) ? _t('_bx_matches_action_title_share') : '',

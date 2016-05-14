@@ -134,7 +134,9 @@ class BxMatchDb extends BxDolTwigModuleDb
 	
 	function getMatchPlayersCount($matchid, $type) {
 		$match_type = ($type == 0) ? 0 : 'p';
-		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1");	
+		//return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1");	
+		$team_players =  $this->getAll ("SELECT count(id_profile) as player_count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1 GROUP BY team_id" );	
+		return $team_players;
 	}
 	function getMatchResult($matchid) {
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."'");	
@@ -143,7 +145,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 1");	
 	}
 	function getMatchStatus($aData) {
-		$player_count = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
+		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
 		$match_result = $this->getMatchResult($aData['id']);
 		$match_result_played = $this->getMatchResultPlayed($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
@@ -156,13 +158,14 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$match_time_after_start = $this->getParam('bx_matches_end_time_after_start');
 		$time_after_hour = $start_time+$match_time_after_start*60;
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
-		if($max_player_match == $player_count) {
+		if(($max_player_match == $player_team[0]['player_count']) && ($max_player_match == $player_team[1]['player_count'])) {
 			$match_status = 'Match Max players capacity reached';
-		} elseif($player_count >=$min_player_match) {
+		} elseif(($player_team[0]['player_count'] >=$min_player_match) && ($player_team[1]['player_count'] >=$min_player_match)) {
 			$match_status = 'Scheduled';
-		} elseif($player_count < $min_player_match) {
+		} elseif(($player_team[0]['player_count'] < $min_player_match) && ($player_team[1]['player_count'] < $min_player_match)) {      
 			$match_status = 'Waiting for players';
 		}
+		
 		if($current_time>=$start_time) {
 			$match_status = 'Kick off';
 		}

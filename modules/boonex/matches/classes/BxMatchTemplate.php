@@ -23,11 +23,18 @@ class BxMatchTemplate extends BxDolTwigTemplate
 
     function unit ($aData, $sTemplateName, &$oVotingView, $isShort = false)
     {
+		$match_players_counts = 0;	
 		$match_detail = $this->_oDb->getMatchDetails($aData['id']);
+		$match_detail['id'] = $aData['id'];
 		$match_type =  ($match_detail['match_type'] == 0)?'Practice':'Teams';
 		$join_type =  ($match_detail['join_confirmation'] == 0)?'Open':'Invitation Only';
 		$match_status = $this->_oDb->getMatchStatus($match_detail);
 		$match_players_count = $this->_oDb->getMatchPlayersCount($aData['id'], $match_detail['match_type']);
+		foreach ($match_players_count as $match_players_cont) {
+			
+			$match_players_counts +=$match_players_cont['player_count'];
+		}
+		
         if (null == $this->_oMain)
             $this->_oMain = BxDolModule::getInstance('BxMatchModule');
 
@@ -51,7 +58,7 @@ class BxMatchTemplate extends BxDolTwigTemplate
 			'match_type' => $match_type,
 			'join_type' => $join_type,
             'created' => defineTimeInterval($aData['created']),
-            'fans_count' => $match_players_count,
+            'fans_count' => $match_players_counts,
 			'match_status' => $match_status,
             'country_city' => $this->_oMain->_formatLocation($aData),
             'snippet_text' => $this->_oMain->_formatSnippetText($aData),
