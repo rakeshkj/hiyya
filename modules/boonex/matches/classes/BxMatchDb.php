@@ -143,7 +143,6 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 1");	
 	}
 	function getMatchStatus($aData) {
-		//echo '<pre>';print_r($aData);
 		$player_count = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
 		$match_result = $this->getMatchResult($aData['id']);
 		$match_result_played = $this->getMatchResultPlayed($aData['id']);
@@ -151,10 +150,11 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
-		$start_time = $aData['start_date']+($aData['match_time']*60*60);
+		$start_date = explode(' ', date('Y-m-d H:i:s',$aData['start_date']));
+		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60);
 		$current_time = time();
 		$match_time_after_start = $this->getParam('bx_matches_end_time_after_start');
-		$time_after_hour = $start_time+$match_time_after_start;
+		$time_after_hour = $start_time+$match_time_after_start*60;
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
 		if($max_player_match == $player_count) {
 			$match_status = 'Match Max players capacity reached';

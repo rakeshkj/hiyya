@@ -411,7 +411,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 ),
 				
 				'bx_if:teamadmin' => array (
-                    'condition' => $aProfile['id_profile'] == $this->_oMain->_iProfileId,
+                    'condition' => false,//$aProfile['id_profile'] == $this->_oMain->_iProfileId,
                     'content' => array (
 						'invite_link'=> 'm/matches/inviteteamplayers/'.$this->aDataEntry[$this->_oDb->_sFieldId].'/'.$aProfile['team_id']
 					)

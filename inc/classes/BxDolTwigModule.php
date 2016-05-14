@@ -764,8 +764,7 @@ class BxDolTwigModule extends BxDolModule
         $oForm->initChecker();
         if ($oForm->isSubmittedAndValid ()) {
 			$home_team = isset($_POST['home_team_players']) ? implode(',', $_POST['home_team_players']) :'';
-			$away_team = isset($_POST['away_team_players']) ? implode(',', $_POST['away_team_players']) :'';
-			date_default_timezone_set ("Asia/Kolkata"); 
+			$away_team = isset($_POST['away_team_players']) ? implode(',', $_POST['away_team_players']) :''; 
 			$time = time(); $date = date('Y-m-d H:i:s',$time);
             $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => $away_team);
             if ($oForm->insert ($aValsAdd)) {
