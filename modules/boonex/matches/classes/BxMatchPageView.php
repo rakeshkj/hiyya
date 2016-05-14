@@ -83,7 +83,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
 				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
 				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : '',
-                'TitleJoin' => ($this->_oMain->isAllowedJoin($this->aDataEntry) && $match_type == 0) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
+                'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
                 'TitleShare' => $this->_oMain->isAllowedShare($this->aDataEntry) ? _t('_bx_matches_action_title_share') : '',
