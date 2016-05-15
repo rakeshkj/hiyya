@@ -69,19 +69,19 @@ class BxDolTwigFormInviter extends BxTemplFormView
             'msg_no_users' => $aVisitors ? '' : $sMsgNoUsers,
         );
 		if($oMain->_aModule['uri'] == 'matches'){
-			$team_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
-			
+			$team_max_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
+			$team_min_capacity = $oMain->_oDb->getParam('bx_teams_team_min_capacity');
 		foreach ($aTeamList as $key => $val) {
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$val['author_id'],$val['id'],'t');
 			if(!empty($user_check))
 				continue;
-			//if($val['fans_count'] <= $team_capacity && $pgdetails[0]['min_players']>=$val['fans_count']) {
+			if($val['fans_count'] <= $team_max_capacity && $pgdetails[0]['min_players']>=$val['fans_count'] && $val['fans_count']>=$team_min_capacity) {
 				$aTeams[] = array (
                 'title' => $val['title'],
                 'link' => "m/teams/view/".$val['uri'],
 				'ID' => $val['author_id'].'_'.$val['id'],
 				);  
-			//}	
+			}	
         }
 		$aVarsTeam = array (
             'bx_repeat:rows' => $aTeams,
