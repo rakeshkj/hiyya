@@ -129,10 +129,10 @@ class BxTeamsPageView extends BxDolTwigPageView
 		$member_count = $aData['fans_count'];
 		$team_max_capacity = $this->_oDb->getParam('bx_teams_team_max_capacity');
 		$team_min_capacity = $this->_oDb->getParam('bx_teams_team_min_capacity');
-		if($member_count == $team_max_capacity) {
+		if($member_count >= $team_max_capacity) {
 			$team_status = 'Team maximum capacity reached';
 			
-		} elseif($member_count == $team_min_capacity) {
+		} elseif($member_count >= $team_min_capacity) {
 			$team_status = 'Complete';
 			
 		} else {
