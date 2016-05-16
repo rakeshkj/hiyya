@@ -236,8 +236,8 @@ class BxDolTwigPageView extends BxDolPageView
 
     function _blockFans($iPerPage, $sFuncIsAllowed = 'isAllowedViewFans', $sFuncGetFans = 'getFans')
     {
-        if (!$this->_oMain->$sFuncIsAllowed($this->aDataEntry))
-            return '';
+        //if (!$this->_oMain->$sFuncIsAllowed($this->aDataEntry))
+            //return '';
 
         $iPage = (int)$_GET['page'];
         if( $iPage < 1)
