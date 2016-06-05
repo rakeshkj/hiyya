@@ -767,7 +767,9 @@ class BxDolTwigModule extends BxDolModule
 			$away_team = isset($_POST['away_team_players']) ? implode(',', $_POST['away_team_players']) :''; 
 			$time = time(); $date = date('Y-m-d H:i:s',$time);
             $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => $away_team);
+			$players_list = array_merge($home_team,$away_team);
             if ($oForm->insert ($aValsAdd)) {
+				$this->_oDb->matchPlayerScoreApproval($iEntryId,$players_list);
                 header ('Location:' . BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry[$this->_oDb->_sFieldUri]);
                 exit;
 
@@ -1919,6 +1921,7 @@ class BxDolTwigModule extends BxDolModule
 
     function _processFansActions ($aDataEntry, $iMaxFans = 1000)
     {
+		
         header('Content-type:text/html;charset=utf-8');
         //&& $this->isAllowedManageFans($aDataEntry)
         if (false !== bx_get('ajax_action')  && 0 == strcasecmp($_SERVER['REQUEST_METHOD'], 'POST')) {
@@ -1933,6 +1936,10 @@ class BxDolTwigModule extends BxDolModule
                     $this->_oDb->removeFansPlayersMatch($iEntryId, bx_get('ids'),$aDataEntry['match_type']);
 					echo '<script type="text/javascript">location.reload(true);</script>';exit;
                     break;
+				case 'reject_score':
+                    $this->_oDb->updatePlayerResponse($iEntryId, bx_get('ids'));
+					echo '<script type="text/javascript">location.reload(true);</script>';exit;
+                    break;	
 				case 'remove':
                     $isShowConfirmedFansOnly = true;
                     if ($this->_oDb->removeFans($iEntryId, $aIds)) {

@@ -18,7 +18,22 @@ class BxDolMatchFormInviter extends BxTemplFormView
         $aVisitors = array ();
 		$user_check = '';
 		//echo '<pre>';print_r($aVisitorsPreapare);
+		$current_match_time = $oMain->_oDb->matchDuration($params[2]);
+		$match_eligibility_player = 0;
         foreach ($aVisitorsPreapare as $k => $r) {
+			$sechudle_check_players = $oMain->_oDb->isScheduled(0,$r['ID']);
+			if($sechudle_check_players==0){
+				$match_eligibility_player = 1;
+			} else {
+				
+				foreach ($sechudle_check_players as $sechudle_check_player) {
+					
+					$previous_match_player_time = $oMain->_oDb->matchDuration($sechudle_check_player['id_entry']);
+					if($current_match_time>$previous_match_player_time){
+						$match_eligibility_player = 1;
+					}
+				}
+			}    
 			$user_check  = $oMain->_oDb->checkUserMatch($params[2],$r['ID'],$params[3],'p');
 			$userInfo = getProfileInfo($r['ID']);
 			$userDOB = $userInfo['DateOfBirth'];
@@ -34,7 +49,7 @@ class BxDolMatchFormInviter extends BxTemplFormView
 					$mGender = 'any';
 				}
 				
-			if(!empty($user_check) )
+			if(!empty($user_check) && $match_eligibility_player==0)
 				continue;
 			if(($userAge < $match_person_age) && ($mGender == $userGender || $mGender == 'any')) {
             $aVisitors[] = array (

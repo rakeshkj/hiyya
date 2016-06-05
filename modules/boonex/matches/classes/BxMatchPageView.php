@@ -124,6 +124,7 @@ class BxMatchPageView extends BxDolTwigPageView
     }
 	function _blockInfo ($aData, $sFields = '', $sLocation = '')
     {
+		//$this->_oDb->isScheduled(7);
         $aAuthor = getProfileInfo($aData['author_id']);
 		$type = $aData['match_type'];
 		$size = $aData['max_players'];
@@ -386,7 +387,7 @@ class BxMatchPageView extends BxDolTwigPageView
 					$checkbox = '<div class="bx_sys_unit_checkbox bx-def-round-corners">
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
 				}
-				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox );
+				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => '' );
 			}
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
 			
@@ -473,8 +474,24 @@ class BxMatchPageView extends BxDolTwigPageView
     {
         $sResult = "";
 		$i=0;
+		$home_score = '';
+		$away_score = '';
+		$team_result = $this->_oDb->teamResult($this->aDataEntry[$this->_oDb->_sFieldId]);
+		$match_status = $this->_oDb->getMatchStatus($this->aDataEntry);
+		$match_uri = 'm/matches/view/'.$this->aDataEntry['uri'];
+		$image_icon = 'templates/base/images/icons/delete.png';
+		if(!empty($team_result) && $match_status == 'Waiting for Result Confirmation'){
+			$home_players = $team_result['home_team_players'];
+			$away_players = $team_result['away_team_players'];
+			$home_players_array = explode(',', $home_players);
+			$away_players_array = explode(',', $away_players);
+			$players = array_merge($home_players_array,$away_players_array);
+			$home_score = 'Score  '. $team_result['home_team_score'];
+			$away_score = 'Score  '. $team_result['away_team_score'];
+		}
         foreach($aProfiles as $aProfile) {
 			$sProfileThumbPlayer = array ();
+			$player_response = '';
 			$checkbox = '';
 			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, 'p',$aProfile['team_id']);
 			
@@ -483,9 +500,25 @@ class BxMatchPageView extends BxDolTwigPageView
 					
 					$checkbox = '<div class="bx_sys_unit_checkbox bx-def-round-corners">
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
-				}
-				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox );
 			}
+			       if(!empty($players)) {      
+					   if(in_array($aPlayersProfile['id_profile'], $players) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {
+						if($this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId])) {  
+						   
+$player_response = <<<EOR
+
+<button onclick="getHtmlData('sys_manage_items_player_response_content', '{$match_uri}?ajax_action=reject_score&amp;ids={$aProfile['id_profile']}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
+
+EOR;
+						}
+
+					   } else {
+						  $player_response =  '<img src="'.$image_icon.'" alt="Result not submitted">';    
+					   }
+					} 
+					
+				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response);
+			
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
             $aVars = array(
                 'id' => $aProfile['ID'],
@@ -514,13 +547,20 @@ class BxMatchPageView extends BxDolTwigPageView
 						'invite_link'=> 'm/matches/inviteteamplayers/'.$this->aDataEntry[$this->_oDb->_sFieldId].'/'.$aProfile['team_id']
 					)
                 ),
+				
+				'bx_if:match_submitted' => array (
+                    'condition' => $aProfile['id_profile'] == $this->_oMain->_iProfileId,
+                    'content' => array (
+						'invite_link'=> 'm/matches/inviteteamplayers/'.$this->aDataEntry[$this->_oDb->_sFieldId].'/'.$aProfile['team_id']
+					)
+                ),
             );
 			if($this->aDataEntry['match_type'] == 1){ 
 				if($i==0) {
-				$sResult .= '<div><b>Home</b></div>';
+				$sResult .= '<div><b>Home</b>  <div>' .$home_score.'</div></div>';
 				} elseif($i==1) {
 					
-					$sResult .= '<div><b>Away</b></div>';
+					$sResult .= '<div><b>Away</b>   <div>'.   $away_score.'</div></div>';
 				} 
 				$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
 			} else {
@@ -532,4 +572,6 @@ class BxMatchPageView extends BxDolTwigPageView
 
         return $isCenterContent ? $GLOBALS['oFunctions']->centerContent ($sResult, '.sys_fan_unit') : $sResult;
     }
+	
+	}
 }

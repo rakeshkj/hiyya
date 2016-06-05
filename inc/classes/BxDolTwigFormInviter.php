@@ -23,10 +23,25 @@ class BxDolTwigFormInviter extends BxTemplFormView
 		$mGender = '';
 		$userGender = '';
 		$team_inviter['inviter_teams'] = '';
-		
+		$current_match_time = $oMain->_oDb->matchDuration($aDataEntry['id']);
+		$match_eligibility_team = 0;
+		$match_eligibility_player = 0;
         foreach ($aVisitorsPreapare as $k => $r) {
+			$sechudle_check_players = $oMain->_oDb->isScheduled(0,$r['ID']);
+			if($sechudle_check_players==0){
+				$match_eligibility_player = 1;
+			} else {
+				
+				foreach ($sechudle_check_players as $sechudle_check_player) {
+					
+					$previous_match_player_time = $oMain->_oDb->matchDuration($sechudle_check_player['id_entry']);
+					if($current_match_time>$previous_match_player_time){
+						$match_eligibility_player = 1;
+					}
+				}
+			}    
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$r['ID'],0,0);
-			if(!empty($user_check))
+			if(!empty($user_check) && $match_eligibility_player==0)
 				continue;
 			if($aDataEntry){
 				$userInfo = getProfileInfo($r['ID']);
@@ -73,7 +88,20 @@ class BxDolTwigFormInviter extends BxTemplFormView
 			$team_min_capacity = $oMain->_oDb->getParam('bx_teams_team_min_capacity');
 		foreach ($aTeamList as $key => $val) {
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$val['author_id'],$val['id'],'t');
-			if(!empty($user_check))
+			$sechudle_check_teams = $oMain->_oDb->isScheduled($val['id'],0);
+			if($sechudle_check_teams==0){
+				$match_eligibility_team = 1;
+			} else {
+				
+				foreach ($sechudle_check_teams as $sechudle_check_team) {
+					
+					$previous_match_team_time = $oMain->_oDb->matchDuration($sechudle_check_team['id_entry']);
+					if($current_match_time>$previous_match_team_time){
+						$match_eligibility_team = 1;
+					}
+				}
+			}    
+			if(!empty($user_check) && $match_eligibility_team==0)
 				continue;
 			if($val['fans_count'] <= $team_max_capacity && $val['fans_count']>=$pgdetails[0]['min_players'] && $val['fans_count']>=$team_min_capacity) {
 				$aTeams[] = array (

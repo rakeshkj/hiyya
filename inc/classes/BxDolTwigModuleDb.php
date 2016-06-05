@@ -498,4 +498,37 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 		}
         return $iRet;
     }
+	
+	function isScheduled ($teamid=0,$playerid=0) {
+		
+		$matches = $this->getAll ("SELECT `id_entry` FROM `bx_matches_fans` where (`team_id` = '".$teamid."' OR `id_profile` = '".$playerid."') AND `confirmed`=1 GROUP By `id_entry`");
+		if(!empty($matches)) {
+			return $matches;
+		} else {
+			return 0;
+		}
+	}
+	
+	function matchDuration($matchId) {
+		
+		$match_time_after_start = $this->getParam('bx_matches_end_time_after_start');
+		$match_detail = $this->getMatchDetails($matchId);
+		$match_start_date  = $match_detail['start_date'];
+		$start_date = explode(' ', date('Y-m-d H:i:s',$match_start_date));
+		$start_date_time = strtotime($start_date[0])+($match_detail['match_time']*60*60);
+		$match_duration = $start_date_time+($match_time_after_start*60);
+		return $match_duration;
+	}
+	
+	function matchPlayerScoreApproval($matchId,$player_list) {
+		foreach ($player_list as $player_lst) {
+		$iRet += $this->query ("INSERT IGNORE INTO `bx_match_approval_players` SET `match_id` = '$matchId', `player_id` = '$player_lst', `approved` = 1");
+		}
+		return $iRet;
+	}
+	
+	function updatePlayerResponse($matchId,$playerId) {
+		
+		$iRet = $this->query ("UPDATE `bx_match_approval_players` SET `approved` ='0' WHERE `match_id` = '$matchId' AND `player_id` = '$playerId' LIMIT 1");
+	}
 }

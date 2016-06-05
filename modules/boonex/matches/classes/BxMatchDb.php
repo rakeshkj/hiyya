@@ -152,11 +152,8 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
-		$start_date = explode(' ', date('Y-m-d H:i:s',$aData['start_date']));
-		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60);
 		$current_time = time();
-		$match_time_after_start = $this->getParam('bx_matches_end_time_after_start');
-		$time_after_hour = $start_time+$match_time_after_start*60;
+		$time_after_hour = $this->matchDuration($aData['id']);
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
 		if(($max_player_match == $player_team[0]['player_count']) && ($max_player_match == $player_team[1]['player_count'])) {
 			$match_status = 'Match Max players capacity reached';
@@ -177,7 +174,21 @@ class BxMatchDb extends BxDolTwigModuleDb
 				$match_status = 'No Match Result';
 			} elseif($match_result_played>=1) {
 				$match_status = 'Waiting for Result Confirmation';
+				if(!$this->maxApprovalTime($aData['id'])) {
+					$match_min_per = $this->getParam('bx_matches_min_percentage');
+					$total_count = $this->getPlayerCount($aData['id']);
+					$approved_count = $this->getPlayersApprovalCount($aData['id']);
+					$percentage = $approved_count/$total_count*100;
+					if($percentage>$match_min_per) {
+						$match_status = 'Played';
+					} else {
+						$match_status = 'No Match Result';
+					}
+				}
 			}      
+		}
+		if($match_result_played==0) {
+			$match_status = 'Cancelled';
 		}
 		if($aData['match_status']==0) {
 			$match_status = 'Cancelled';
@@ -185,5 +196,36 @@ class BxMatchDb extends BxDolTwigModuleDb
 		
 		return $match_status;
 		
+	}
+	
+	function teamResult($matchid) {
+		return $this->getRow ("SELECT * FROM `bx_match_result` where `match_id`= '".$matchid."' AND `match_played`='1' ORDER BY date_created LIMIT 1");
+	}
+	
+	function maxApprovalTime($matchId) {
+		$current_time = time();
+		$match_max_result_time = $this->getParam('bx_matches_max_approval_time');
+		$max_approval_time = $this->matchDuration($matchId)+$match_max_result_time;
+		if($current_time>$max_approval_time){
+			return false;
+		} else {
+			return true;
+		}	
+		
+	}
+	
+	function getTotalPlayerCount($matchid) {
+		
+		$res = $this->teamResult($matchid);
+		$home_player = explode(',', $res['home_team_players']);
+		$away_player = explode(',', $res['away_team_players']);
+		$players = count(array_merge($home_player,$away_player));
+		
+		return $players;
+	}
+	
+	function getPlayersApprovalCount($matchid) {
+		
+		return $this->getOne ("SELECT count(*) as count FROM ` bx_match_approval_players` WHERE match_id='".$matchid."' AND `approved`='1'");	
 	}
 }
