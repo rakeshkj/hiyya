@@ -142,13 +142,17 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."'");	
 	}
 	function getMatchResultPlayed($matchid) {
-		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 1");	
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 1");
+	}
+	function getMatchResultNotPlayed($matchid) {
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 0");
 	}
 	function getMatchStatus($aData) {
 		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
 		$match_result = $this->getMatchResult($aData['id']);
 		$match_result_played = $this->getMatchResultPlayed($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
+		$match_not_played = $this->getMatchResultNotPlayed($aData['id']);
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
@@ -172,11 +176,11 @@ class BxMatchDb extends BxDolTwigModuleDb
 		if($current_time>=$submit_result_duraion) {
 			if($match_result<=0) {
 				$match_status = 'No Match Result';
-			} elseif($match_result_played>=1) {
+			} elseif($match_result_played=='yes') {
 				$match_status = 'Waiting for Result Confirmation';
 				if(!$this->maxApprovalTime($aData['id'])) {
 					$match_min_per = $this->getParam('bx_matches_min_percentage');
-					$total_count = $this->getPlayerCount($aData['id']);
+					$total_count = $this->getTotalPlayerCount($aData['id']);
 					$approved_count = $this->getPlayersApprovalCount($aData['id']);
 					$percentage = $approved_count/$total_count*100;
 					if($percentage>$match_min_per) {
@@ -187,7 +191,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 				}
 			}      
 		}
-		if($match_result_played==0) {
+		if($match_not_played>=1) {
 			$match_status = 'Cancelled';
 		}
 		if($aData['match_status']==0) {
@@ -226,6 +230,6 @@ class BxMatchDb extends BxDolTwigModuleDb
 	
 	function getPlayersApprovalCount($matchid) {
 		
-		return $this->getOne ("SELECT count(*) as count FROM ` bx_match_approval_players` WHERE match_id='".$matchid."' AND `approved`='1'");	
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_approval_players` WHERE match_id='".$matchid."' AND `approved`='1'");	
 	}
 }
