@@ -171,7 +171,11 @@ class BxMatchDb extends BxDolTwigModuleDb
 		}
 		
 		if($current_time>=$start_time) {
+			if($match_status == 'Waiting for players'){
+				$match_status = 'Cancelled';
+			} else {
 			$match_status = 'Kick off';
+			}
 		}
 		if($current_time>=$time_after_hour) {
 			$match_status = 'Time Up/Waiting for Results';
