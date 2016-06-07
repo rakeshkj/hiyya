@@ -156,6 +156,9 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$min_player_match = $pgdetails[0]['min_players'];
 		$max_player_match = $pgdetails[0]['max_players'];
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
+		$match_start_time_min = $this->getParam('bx_matches_start_mins');
+		$start_date = explode(' ', date('Y-m-d H:i:s',$aData['start_date']));
+-		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60)+$match_start_time_min*60;
 		$current_time = time();
 		$time_after_hour = $this->matchDuration($aData['id']);
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
