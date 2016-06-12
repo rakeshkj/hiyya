@@ -449,6 +449,7 @@ class BxMatchPageView extends BxDolTwigPageView
         if (!$iNum)
             return MsgBox(_t('_Empty'));
 
+		
         $sActionsUrl = BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri] . '?ajax_action=';
         $aButtons = array (
             array (
@@ -518,7 +519,7 @@ EOR;
 					} 
 					
 				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response);
-			
+			}
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
             $aVars = array(
                 'id' => $aProfile['ID'],
@@ -568,10 +569,10 @@ EOR;
 				$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match_practice', $aVars);
 			}	
 			$i++;
-        }
-
+        
+	}
         return $isCenterContent ? $GLOBALS['oFunctions']->centerContent ($sResult, '.sys_fan_unit') : $sResult;
-    }
+    
 	
 	}
 }
