@@ -85,7 +85,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function getTeamPlayers(&$aProfiles, $iEntryId, $isConfirmed, $type, $team_id)
     {
         $isConfirmed = $isConfirmed ? 1 : 0;
-        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = $isConfirmed AND `f`.`type` = '$type' AND `f`.`team_id` = '$team_id' AND `p`.`Status` = 'Active') ORDER BY `f`.`when` DESC ");
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = $isConfirmed AND `f`.`type` = '$type' AND `f`.`team_id` = '$team_id' AND `p`.`Status` = 'Active') GROUP BY `f`.`id_profile` ORDER BY  `f`.`when` DESC ");
         return $this->getOne("SELECT FOUND_ROWS()");
     }
 	
@@ -132,7 +132,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='t'");	
 	}
 	
-	function getMatchPlayersCount($matchid, $type) {
+	function getMatchPlayersCount($matchid, $type) {    
 		$match_type = ($type == 0) ? 0 : 'p';
 		//return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1");	
 		$team_players =  $this->getAll ("SELECT count(id_profile) as player_count FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='".$match_type."' AND `confirmed`=1 GROUP BY team_id" );	
@@ -149,6 +149,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 	}
 	function getMatchStatus($aData) {
 		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
+		//echo '<pre>';print_r($player_team);
 		$match_result = $this->getMatchResult($aData['id']);
 		$match_result_played = $this->getMatchResultPlayed($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
@@ -158,10 +159,11 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
 		$match_start_time_min = $this->getParam('bx_matches_start_mins');
 		$start_date = explode(' ', date('Y-m-d H:i:s',$aData['start_date']));
--		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60)+$match_start_time_min*60;
+-		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60)+($match_start_time_min*60);
 		$current_time = time();
 		$time_after_hour = $this->matchDuration($aData['id']);
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
+		$match_status = 'Waiting for players';
 		if(($max_player_match == $player_team[0]['player_count']) && ($max_player_match == $player_team[1]['player_count'])) {
 			$match_status = 'Match Max players capacity reached';
 		} elseif(($player_team[0]['player_count'] >=$min_player_match) && ($player_team[1]['player_count'] >=$min_player_match)) {

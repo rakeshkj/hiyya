@@ -13,6 +13,7 @@ class BxDolTwigFormInviter extends BxTemplFormView
 {
     function BxDolTwigFormInviter ($oMain, $sMsgNoUsers, $aDataEntry = null)
     {
+		//echo '<pre>';print_r($aDataEntry);
         $aVisitorsPreapare = $oMain->_oDb->getPotentialVisitors ($oMain->_iProfileId);
 		$aTeamList = $oMain->_oDb->getPublicTeam($oMain->_iProfileId);
 		$pgdetails = $oMain->_oDb->getPalgroundDetails($aDataEntry['playground']);
@@ -169,7 +170,10 @@ class BxDolTwigFormInviter extends BxTemplFormView
                     'value' => _t('_Submit'),
                 ),
             ),
-        );		
+        );	
+        if($aDataEntry['match_type']=='1'){		
+		unset($aCustomForm['inputs']['inviter_users']);
+		}
 		} else {
         $aCustomForm = array(
 
