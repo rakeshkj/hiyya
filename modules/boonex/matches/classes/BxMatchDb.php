@@ -182,11 +182,14 @@ class BxMatchDb extends BxDolTwigModuleDb
 		if($current_time>=$time_after_hour) {
 			$match_status = 'Time Up/Waiting for Results';
 		}
+		if($match_result_played>=1){
+			
+			$match_status = 'Waiting for Result Confirmation';
+		}
 		if($current_time>=$submit_result_duraion) {
 			if($match_result<=0) {
 				$match_status = 'No Match Result';
-			} elseif($match_result_played=='yes') {
-				$match_status = 'Waiting for Result Confirmation';
+			} elseif($match_result_played>=1) {
 				if(!$this->maxApprovalTime($aData['id'])) {
 					$match_min_per = $this->getParam('bx_matches_min_percentage');
 					$total_count = $this->getTotalPlayerCount($aData['id']);
