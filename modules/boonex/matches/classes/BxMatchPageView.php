@@ -439,7 +439,6 @@ class BxMatchPageView extends BxDolTwigPageView
     }
 	function _blockFans($iFansLimit = 1000)
     {
-        
         $aProfiles = array ();
 		if($this->aDataEntry['match_type'] == 0){ 
 		$iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',1);
@@ -449,7 +448,7 @@ class BxMatchPageView extends BxDolTwigPageView
         if (!$iNum)
             return MsgBox(_t('_Empty'));
 
-		
+		$match_team_owner = $this->_oDb->getMatchTeamOwnerId($this->aDataEntry[$this->_oDb->_sFieldId]);
         $sActionsUrl = BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri] . '?ajax_action=';
         $aButtons = array (
             array (
@@ -460,7 +459,7 @@ class BxMatchPageView extends BxDolTwigPageView
             )
         );
         bx_import ('BxTemplSearchResult');
-		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId) {
+		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId || in_array($this->_oMain->_iProfileId,$match_team_owner)) {
         $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit', false);
 		}
         $aVars = array(
@@ -481,14 +480,17 @@ class BxMatchPageView extends BxDolTwigPageView
 		$match_status = $this->_oDb->getMatchStatus($this->aDataEntry);
 		$match_uri = 'm/matches/view/'.$this->aDataEntry['uri'];
 		$image_icon = 'templates/base/images/icons/delete.png';
+		if($team_result['home_team_score'] && $team_result['away_team_score']){
+			
+			$home_score = 'Score  '. $team_result['home_team_score'];
+			$away_score = 'Score  '. $team_result['away_team_score'];
+		}
 		if(!empty($team_result) && $match_status == 'Waiting for Result Confirmation'){
 			$home_players = $team_result['home_team_players'];
 			$away_players = $team_result['away_team_players'];
 			$home_players_array = explode(',', $home_players);
 			$away_players_array = explode(',', $away_players);
 			$players = array_merge($home_players_array,$away_players_array);
-			$home_score = 'Score  '. $team_result['home_team_score'];
-			$away_score = 'Score  '. $team_result['away_team_score'];
 		}
         foreach($aProfiles as $aProfile) {
 			$sProfileThumbPlayer = array ();
@@ -503,8 +505,8 @@ class BxMatchPageView extends BxDolTwigPageView
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
 			}
 			       if(!empty($players)) {      
-					   if(in_array($aPlayersProfile['id_profile'], $players) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {
-						if($this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId])) {  
+					   if(in_array($aPlayersProfile['id_profile'], $players)) {
+						if($this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId]) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {  
 						   
 $player_response = <<<EOR
 

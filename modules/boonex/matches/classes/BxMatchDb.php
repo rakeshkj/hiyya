@@ -142,10 +142,10 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."'");	
 	}
 	function getMatchResultPlayed($matchid) {
-		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 1");
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = '1'");
 	}
 	function getMatchResultNotPlayed($matchid) {
-		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = 0");
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchid."' AND match_played = '0'");
 	}
 	function getMatchStatus($aData) {
 		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
@@ -243,5 +243,14 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function getPlayersApprovalCount($matchid) {
 		
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_approval_players` WHERE match_id='".$matchid."' AND `approved`='1'");	
+	}
+	
+	function getMatchTeamOwnerId($matchid) {
+		
+		$team_owners = $this->getAll("SELECT `id_profile` FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='t' ORDER BY `when` DESC LIMIT 0,2");
+		foreach ($team_owners as $team_owner) {
+			$team_owner_id[] = $team_owner['id_profile'];
+		}
+		return $team_owner_id;
 	}
 }
