@@ -349,7 +349,7 @@ class BxMatchPageView extends BxDolTwigPageView
 		}
         if (!$iNum)
             return MsgBox(_t('_Empty'));
-
+        $match_team_owner = $this->_oDb->getMatchTeamOwnerId($this->aDataEntry[$this->_oDb->_sFieldId]);
         $sActionsUrl = BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri] . '?ajax_action=';
         $aButtons = array (
             array (
@@ -360,7 +360,7 @@ class BxMatchPageView extends BxDolTwigPageView
             )
         );
         bx_import ('BxTemplSearchResult');
-		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId) {
+		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId || in_array($this->_oMain->_iProfileId,$match_team_owner)) {
         $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit', false);
 		}
 		//echo '<pre>';print_r($aProfiles);
