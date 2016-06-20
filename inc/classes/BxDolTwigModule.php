@@ -763,11 +763,22 @@ class BxDolTwigModule extends BxDolModule
         $oForm = new $sClass ($this, $this->_iProfileId, $iEntryId);
         $oForm->initChecker();
         if ($oForm->isSubmittedAndValid ()) {
-			$home_team = isset($_POST['home_team_players']) ? implode(',', $_POST['home_team_players']) :'';
-			$away_team = isset($_POST['away_team_players']) ? implode(',', $_POST['away_team_players']) :''; 
+			if($aDataEntry['match_type']=='1') {
+			$home_team = isset($_POST['home_team_players']) ? implode(',',$_POST['home_team_players']) :'';
+			$away_team = isset($_POST['away_team_players']) ? implode(',',$_POST['away_team_players']) :''; 
 			$time = time(); $date = date('Y-m-d H:i:s',$time);
             $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => $away_team);
-			$players_list = array_merge($home_team,$away_team);
+			$home_player = isset($_POST['home_team_players'])? $_POST['home_team_players'] :array();
+			$away_player = isset($_POST['away_team_players'])? $_POST['away_team_players'] :array();
+			$players_list = array_merge($home_player,$away_player);
+			} else {
+				
+		    $home_team = isset($_POST['players_list_practice']) ? implode(',',$_POST['players_list_practice']) :'';
+			$time = time(); $date = date('Y-m-d H:i:s',$time);
+            $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => '');
+			$home_player = isset($_POST['players_list_practice'])? $_POST['players_list_practice'] :array();
+			$players_list = $home_player;
+			}
             if ($oForm->insert ($aValsAdd)) {
 				$this->_oDb->matchPlayerScoreApproval($iEntryId,$players_list);
                 header ('Location:' . BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry[$this->_oDb->_sFieldUri]);

@@ -522,7 +522,7 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 	
 	function matchPlayerScoreApproval($matchId,$player_list) {
 		foreach ($player_list as $player_lst) {
-		$iRet += $this->query ("INSERT IGNORE INTO `bx_match_approval_players` SET `match_id` = '$matchId', `player_id` = '$player_lst', `approved` = 1");
+		$iRet += $this->query ("INSERT IGNORE INTO `bx_match_approval_players` SET `match_id` = '$matchId', `player_id` = '$player_lst', `approved` = '1'");
 		}
 		return $iRet;
 	}

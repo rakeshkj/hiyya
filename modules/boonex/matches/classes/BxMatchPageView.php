@@ -82,7 +82,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleEdit' => $this->_oMain->isAllowedEdit($this->aDataEntry) ? _t('_bx_matches_action_title_edit') : '',
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
 				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
-				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : '',
+				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : _t('_bx_matches_action_title_submit'),
                 'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
@@ -342,6 +342,7 @@ class BxMatchPageView extends BxDolTwigPageView
 	function _blockFansUnconfirmed($iFansLimit = 1000)
     {
         $aProfiles = array ();
+		$match_team_owner = array();
 		if($this->aDataEntry['match_type'] == 0){
 			$iNum = $this->_oDb->getMatchTeamUnconfirmedPractice($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',0);
 		} else {
@@ -440,6 +441,7 @@ class BxMatchPageView extends BxDolTwigPageView
 	function _blockFans($iFansLimit = 1000)
     {
         $aProfiles = array ();
+		$match_team_owner = array();
 		if($this->aDataEntry['match_type'] == 0){ 
 		$iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',1);
 		} else {
@@ -485,12 +487,29 @@ class BxMatchPageView extends BxDolTwigPageView
 			$home_score = 'Score  '. $team_result['home_team_score'];
 			$away_score = 'Score  '. $team_result['away_team_score'];
 		}
-		if(!empty($team_result) && $match_status == 'Waiting for Result Confirmation'){
-			$home_players = $team_result['home_team_players'];
-			$away_players = $team_result['away_team_players'];
-			$home_players_array = explode(',', $home_players);
-			$away_players_array = explode(',', $away_players);
-			$players = array_merge($home_players_array,$away_players_array);
+		
+		if(!empty($team_result)){ //&& $match_status == 'Waiting for Result Confirmation'
+		    if($aDataEntry['match_type'] == '1') {
+				$home_players = $team_result['home_team_players'];
+				$away_players = $team_result['away_team_players'];
+				
+					$home_players_array = explode(',', $home_players);
+				
+					$away_players_array = explode(',', $away_players);
+								
+				if(isset($home_players_array) && isset($away_players_array)) {
+				$players = array_merge($home_players_array,$away_players_array);
+				} elseif(isset($home_players_array)) {
+					$players = $home_players_array;
+				} elseif(isset($away_players_array)) { 
+					$players = $away_players_array;
+				}
+			} else {
+				
+				$home_players = $team_result['home_team_players'];
+				$home_players_array = explode(',', $home_players);
+				$players = $home_players_array;
+			}
 		}
         foreach($aProfiles as $aProfile) {
 			$sProfileThumbPlayer = array ();

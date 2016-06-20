@@ -16,8 +16,11 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 		$this->_oMain = $oMain;
         $this->_oDb = $oMain->_oDb;
 		$iNum = $this->_oDb->getMatchTeam($aProfiles, $iEntryId, 0, 2, '', 't',1);
+		$iNumPractice = $this->_oDb->getMatchTeam($aProfilesP, $iEntryId, 0, 20, '', '0',1);
+		
 		$i = 0;
 		$match_type = $this->_oDb->getMatchDetails($iEntryId);
+		if($match_type['match_type'] == '1') {
 		foreach ($aProfiles as $aProfile) {
 			
 			$team_players[] = $this->_oDb->getTeamPlayers($aPlayersProfiles, $iEntryId, true, 'p',$aProfile['team_id']);
@@ -27,6 +30,14 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 				$sProfileThumbPlayer[$side][$aPlayersProfile['ID']] = get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' );
 			}
 			$i++;
+		}
+		} else {
+			foreach ($aProfilesP as $aProfilep) {
+			
+				$sProfileThumbPlayer[$aProfilep['ID']] = get_member_thumbnail( $aProfilep['ID'], 'none', ! $bExtMode, 'visitor' );
+			
+		}
+			
 		}
         $aCustomForm = array(
 
@@ -116,7 +127,14 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 					'values' => $sProfileThumbPlayer['away'],
 					'attrs' => array()
 				),
-
+                'players_list_practice' => array(
+					'type' => 'checkbox_set',
+					'name' => 'players_list_practice',
+					'caption' => _t('_players_list'),
+					'value' => true,
+					'values' => $sProfileThumbPlayer,
+					'attrs' => array()
+				),
                 
                 'Submit' => array (
                     'type' => 'submit',
@@ -129,6 +147,8 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 		if($match_type['match_type'] == 0){
 		unset ($aCustomForm['inputs']['away_team_score']);
 		unset ($aCustomForm['inputs']['home_team_score']);
+		unset ($aCustomForm['inputs']['away_team_players']);
+		unset ($aCustomForm['inputs']['home_team_players']);
 		}
         parent::BxDolFormMedia ($aCustomForm);
     }

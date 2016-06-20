@@ -97,7 +97,7 @@ class BxMatchDb extends BxDolTwigModuleDb
             $s = implode (' OR `f`.`id_profile` = ', $aFilter);
             $sFilter = ' AND (`f`.`id_profile` = ' . $s . ') ';
         }
-        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = '$isConfirmed' AND `f`.`type` = '$type' AND `p`.`Status` = 'Active' $sFilter) ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = '$isConfirmed' AND `f`.`type` = '$type' AND `p`.`Status` = 'Active' $sFilter) GROUP BY `f`.`id_profile` ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
         return $this->getOne("SELECT FOUND_ROWS()");
     }
 	
@@ -120,7 +120,7 @@ class BxMatchDb extends BxDolTwigModuleDb
             $s = implode (' OR `f`.`id_profile` = ', $aFilter);
             $sFilter = ' AND (`f`.`id_profile` = ' . $s . ') ';
         }
-        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID`  AND `f`.`type` = '$type' AND `f`.`confirmed` = '$isConfirmed' AND `p`.`Status` = 'Active' $sFilter) ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID`  AND `f`.`type` = '$type' AND `f`.`confirmed` = '$isConfirmed' AND `p`.`Status` = 'Active' $sFilter) GROUP BY `f`.`id_profile` ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
         return $this->getOne("SELECT FOUND_ROWS()");
     }
 	function getTeamDetails($id) {
@@ -149,8 +149,8 @@ class BxMatchDb extends BxDolTwigModuleDb
 	}
 	function getMatchStatus($aData) {
 		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
-		//echo '<pre>';print_r($player_team);
 		$match_result = $this->getMatchResult($aData['id']);
+		//echo '<pre>';print_r($match_result);
 		$match_result_played = $this->getMatchResultPlayed($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
 		$match_not_played = $this->getMatchResultNotPlayed($aData['id']);
@@ -164,14 +164,24 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$time_after_hour = $this->matchDuration($aData['id']);
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
 		$match_status = 'Waiting for players';
-		if(($max_player_match == $player_team[0]['player_count']) && ($max_player_match == $player_team[1]['player_count'])) {
-			$match_status = 'Match Max players capacity reached';
-		} elseif(($player_team[0]['player_count'] >=$min_player_match) && ($player_team[1]['player_count'] >=$min_player_match)) {
-			$match_status = 'Scheduled';
-		} elseif(($player_team[0]['player_count'] < $min_player_match) && ($player_team[1]['player_count'] < $min_player_match)) {      
-			$match_status = 'Waiting for players';
+		if($aData['match_type']=='1') {
+			if(($max_player_match == $player_team[0]['player_count']) && ($max_player_match == $player_team[1]['player_count'])) {
+				$match_status = 'Match Max players capacity reached';
+			} elseif(($player_team[0]['player_count'] >=$min_player_match) && ($player_team[1]['player_count'] >=$min_player_match)) {
+				$match_status = 'Scheduled';
+			} elseif(($player_team[0]['player_count'] < $min_player_match) && ($player_team[1]['player_count'] < $min_player_match)) {      
+				$match_status = 'Waiting for players';
+			}
+		} else {
+			if(($max_player_match == $player_team[0]['player_count'])) {
+				$match_status = 'Match Max players capacity reached';
+			} elseif(($player_team[0]['player_count'] >=$min_player_match)) {
+				$match_status = 'Scheduled';
+			} elseif(($player_team[0]['player_count'] < $min_player_match)) {      
+				$match_status = 'Waiting for players';
+			}
+			
 		}
-		
 		if($current_time>=$start_time) {
 			if($match_status == 'Waiting for players'){
 				$match_status = 'Cancelled';
@@ -220,7 +230,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 	
 	function maxApprovalTime($matchId) {
 		$current_time = time();
-		$match_max_result_time = $this->getParam('bx_matches_max_approval_time');
+		$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
 		$max_approval_time = $this->matchDuration($matchId)+$match_max_result_time;
 		if($current_time>$max_approval_time){
 			return false;

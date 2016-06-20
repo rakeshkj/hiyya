@@ -348,7 +348,7 @@ function getHtmlData( elem, url, callback, method, confirmation )
 			  {
 					location.reload(true);
 					
-			  }, 200);
+			  }, 500);
 			}
 		}
 	    else {
