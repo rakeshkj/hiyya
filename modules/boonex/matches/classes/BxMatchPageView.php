@@ -82,7 +82,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleEdit' => $this->_oMain->isAllowedEdit($this->aDataEntry) ? _t('_bx_matches_action_title_edit') : '',
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
 				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
-				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : _t('_bx_matches_action_title_submit'),
+				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : '',
                 'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
@@ -342,7 +342,6 @@ class BxMatchPageView extends BxDolTwigPageView
 	function _blockFansUnconfirmed($iFansLimit = 1000)
     {
         $aProfiles = array ();
-		$match_team_owner = array();
 		if($this->aDataEntry['match_type'] == 0){
 			$iNum = $this->_oDb->getMatchTeamUnconfirmedPractice($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',0);
 		} else {
@@ -361,7 +360,7 @@ class BxMatchPageView extends BxDolTwigPageView
             )
         );
         bx_import ('BxTemplSearchResult');
-		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId || in_array($this->_oMain->_iProfileId,$match_team_owner)) {
+		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId || @in_array($this->_oMain->_iProfileId,$match_team_owner)) {
         $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit', false);
 		}
 		//echo '<pre>';print_r($aProfiles);
@@ -441,7 +440,6 @@ class BxMatchPageView extends BxDolTwigPageView
 	function _blockFans($iFansLimit = 1000)
     {
         $aProfiles = array ();
-		$match_team_owner = array();
 		if($this->aDataEntry['match_type'] == 0){ 
 		$iNum = $this->_oDb->getMatchTeam($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 0, 20, '', '0',1);
 		} else {
@@ -461,7 +459,7 @@ class BxMatchPageView extends BxDolTwigPageView
             )
         );
         bx_import ('BxTemplSearchResult');
-		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId || in_array($this->_oMain->_iProfileId,$match_team_owner)) {
+		if($this->aDataEntry['author_id'] == $this->_oMain->_iProfileId || @in_array($this->_oMain->_iProfileId,$match_team_owner)) {
         $sControl = BxTemplSearchResult::showAdminActionsPanel('sys_manage_items_unconfirmed_fans', $aButtons, 'sys_fan_unit', false);
 		}
         $aVars = array(

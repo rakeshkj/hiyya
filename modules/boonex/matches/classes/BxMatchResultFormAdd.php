@@ -149,6 +149,9 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 		unset ($aCustomForm['inputs']['home_team_score']);
 		unset ($aCustomForm['inputs']['away_team_players']);
 		unset ($aCustomForm['inputs']['home_team_players']);
+		} else {
+			
+			unset ($aCustomForm['inputs']['players_list_practice']);
 		}
         parent::BxDolFormMedia ($aCustomForm);
     }

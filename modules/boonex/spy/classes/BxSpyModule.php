@@ -348,12 +348,9 @@
                         oSpy.iLastEventId = {$iLastActivityId};
                         oSpy.iEventsCount = {$iActivityCount};
                         oSpy.iPerPage = {$this -> iPerPage};
-                        oSpy.iSlideDown = {$this -> _oConfig -> iSpeedToggleDown};
-                        oSpy.iSlideUp = {$this -> _oConfig -> iSpeedToggleUp};
                         oSpy.sActivityType = '{$sType}';
                         oSpy.iProfileId = {$iProfileId};
                         oSpy.bUpdateAllowed = {$sActive};
-
                         oSpy.PageUpdate();
                     });
                 </script>
@@ -361,7 +358,10 @@ JS;
 
             return $sOutputCode;
         }
-
+/*
+oSpy.iSlideDown = {$this -> _oConfig -> iSpeedToggleDown};
+                        oSpy.iSlideUp = {$this -> _oConfig -> iSpeedToggleUp};
+*/
         /**
          * Function will generate activity types toggle elements;
          *
@@ -679,6 +679,7 @@ JS;
             $sOutputCode = null;
             $aProcessedActivites = array();
 			$matchInvitations = $this -> _oDb-> getAllInvitationMatch($this -> iMemberId);
+			//echo '<pre>';print_r($matchInvitations);
 			$teamInvitations = $this -> _oDb-> getAllInvitationTeam($this -> iMemberId);
 			foreach ($matchInvitations as $matchInvitation) {
 				$match_info = $this -> _oDb ->getMatchInfo($matchInvitation['id_entry']);
@@ -702,7 +703,7 @@ JS;
 				$teamInvitation['team_author_id'] = $team_info[0]['author_id'];
 				$aActivites[] = $teamInvitation;
 			}
-			//echo '<pre>';print_r($aActivites);
+			
             if( is_array($aActivites) ) {
                 foreach($aActivites as $iKey => $aItems) {
                     $aParams  = unserialize($aItems['params']);
@@ -781,6 +782,7 @@ EOR;
 						$sActivity = $sActivity;
 						$date_added = getLocaleDate( strtotime($aItems['date']), BX_DOL_LOCALE_DATE);
 					}
+					//echo '<pre>';print_r($sActivity);die;
                     // define activity's sender;
                     if($aItems['sender_id']){
                         $aTemplateKeys = array(

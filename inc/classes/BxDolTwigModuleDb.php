@@ -512,6 +512,7 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 	function matchDuration($matchId) {
 		
 		$match_time_after_start = $this->getParam('bx_matches_end_time_after_start');
+		if($this->_sPrefix .$this->_sTableMain == 'bx_matches_main')
 		$match_detail = $this->getMatchDetails($matchId);
 		$match_start_date  = $match_detail['start_date'];
 		$start_date = explode(' ', date('Y-m-d H:i:s',$match_start_date));
