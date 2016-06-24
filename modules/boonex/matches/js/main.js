@@ -35,7 +35,12 @@ $('#starttime').change(function () {
 				 }
 				 
 			}
-        });		
-});	
-
+        });	
+		
+	setInterval(function () {
+    loadDynamicBlock(188, window.location.href+'?dynamic=tab');
+	loadDynamicBlock(192, window.location.href+'?dynamic=tab');
+	loadDynamicBlock(193, window.location.href+'?dynamic=tab');
+	}, 10000);
 	
+});		

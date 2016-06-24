@@ -160,6 +160,7 @@ class BxTeamsModule extends BxDolTwigModule
         $this->_sPrefix = 'bx_teams';
 
         bx_import ('Privacy', $aModule);
+		$this -> _oTemplate -> addJs('main.js');
         $this->_oPrivacy = new BxTeamsPrivacy($this);
 
         $GLOBALS['oBxTeamsModule'] = &$this;

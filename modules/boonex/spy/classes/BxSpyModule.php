@@ -105,7 +105,7 @@
             // prepare the location link ;
             $this -> sPathToModule  = BX_DOL_URL_ROOT . $this -> _oConfig -> getBaseUri();
             $this -> aModuleInfo    = $aModule;
-
+			$this -> _oTemplate -> addJs('main.js');	
             $this -> oSearch        = &new BxSpySearch($this);
 
             // define current page's mode;
@@ -201,6 +201,7 @@
             $iProfileId = (int) $iProfileId;
 			$aRet = array();
 			$aProccesedActivites = array();
+			$aActivites = array();
             // set filter;
             if($sType && $sType != 'all') {
                 $this -> oSearch -> aCurrent['restriction']['type']['value'] = process_db_input($sType, BX_TAGS_STRIP);

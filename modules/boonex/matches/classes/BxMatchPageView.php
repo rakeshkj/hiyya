@@ -124,7 +124,6 @@ class BxMatchPageView extends BxDolTwigPageView
     }
 	function _blockInfo ($aData, $sFields = '', $sLocation = '')
     {
-		//$this->_oDb->isScheduled(7);
         $aAuthor = getProfileInfo($aData['author_id']);
 		$type = $aData['match_type'];
 		$size = $aData['max_players'];
@@ -349,6 +348,7 @@ class BxMatchPageView extends BxDolTwigPageView
 		}
         if (!$iNum)
             return MsgBox(_t('_Empty'));
+	
         $match_team_owner = $this->_oDb->getMatchTeamOwnerId($this->aDataEntry[$this->_oDb->_sFieldId]);
         $sActionsUrl = BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri] . '?ajax_action=';
         $aButtons = array (
@@ -447,7 +447,7 @@ class BxMatchPageView extends BxDolTwigPageView
 		}
         if (!$iNum)
             return MsgBox(_t('_Empty'));
-
+		
 		$match_team_owner = $this->_oDb->getMatchTeamOwnerId($this->aDataEntry[$this->_oDb->_sFieldId]);
         $sActionsUrl = BX_DOL_URL_ROOT . $this->_oMain->_oConfig->getBaseUri() . "view/" . $this->aDataEntry[$this->_oDb->_sFieldUri] . '?ajax_action=';
         $aButtons = array (

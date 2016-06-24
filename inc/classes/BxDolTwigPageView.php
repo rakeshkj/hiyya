@@ -272,8 +272,8 @@ class BxDolTwigPageView extends BxDolPageView
 
     function _blockFansUnconfirmed($iFansLimit = 1000)
     {
-        if (!$this->_oMain->isEntryAdmin($this->aDataEntry))
-            return '';
+        //if (!$this->_oMain->isEntryAdmin($this->aDataEntry))
+            //return '';
 
         $aProfiles = array ();
         $iNum = $this->_oDb->getFans($aProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], false, 0, $iFansLimit);
