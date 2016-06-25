@@ -852,6 +852,9 @@ class BxDolTemplate extends BxDolMistake
             case 'is_profile_page':
                 $sRet = (defined('BX_PROFILE_PAGE')) ? 'true' : 'false';
                 break;
+			case 'refresh_interval':
+                $sRet = getParam('bx_spy_update_time');
+                break;	
             default:
                 $sRet = ($sTemplAdd = $oFunctions->TemplPageAddComponent($sKey)) !== false ? $sTemplAdd : $aKeyWrappers['left'] . $sKey . $aKeyWrappers['right'];
             }

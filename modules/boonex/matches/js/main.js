@@ -36,11 +36,14 @@ $('#starttime').change(function () {
 				 
 			}
         });	
-		
+	var interval = $('#refreshtime').val();
+	if(interval>0) {
 	setInterval(function () {
     loadDynamicBlock(188, window.location.href+'?dynamic=tab');
 	loadDynamicBlock(192, window.location.href+'?dynamic=tab');
 	loadDynamicBlock(193, window.location.href+'?dynamic=tab');
-	}, 10000);
+	loadDynamicBlock(203, window.location.href+'?dynamic=tab');
+	}, interval);
+	}
 	
 });		
