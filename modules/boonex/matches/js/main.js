@@ -24,6 +24,20 @@ $('#blockbooking').change(function () {
 				$("#enddate").parent().parent().parent().show();
 			}
         });
+$('#matchtype').change(function () {
+			
+			var match_type = document.querySelector('input[name="match_type"]:checked').value;
+			if(match_type == 1){
+				 $("#enddate").parent().parent().parent().hide();
+				 $("#blockbooking").parent().parent().parent().hide();
+				 $("#permanentteam").parent().parent().parent().hide();
+			} else {
+				$("#enddate").parent().parent().parent().show();
+				$("#blockbooking").parent().parent().parent().show();
+				$("#permanentteam").parent().parent().parent().show();
+			}
+        });
+		
 $('#starttime').change(function () {
 			var hr = today.getHours();
 			var startTime = $('#starttime').val();

@@ -200,7 +200,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 			if($match_result<=0) {
 				$match_status = 'No Match Result';
 			} elseif($match_result_played>=1) {
-				if(!$this->maxApprovalTime($aData['id'])) {
+				if(!$this->maxApprovalTime($aData)) {
 					$match_min_per = $this->getParam('bx_matches_min_percentage');
 					$total_count = $this->getTotalPlayerCount($aData['id']);
 					$approved_count = $this->getPlayersApprovalCount($aData['id']);
@@ -228,10 +228,23 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getRow ("SELECT * FROM `bx_match_result` where `match_id`= '".$matchid."' AND `match_played`='1' ORDER BY date_created LIMIT 1");
 	}
 	
-	function maxApprovalTime($matchId) {
+	function maxApprovalTime($data) {
 		$current_time = time();
-		$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
-		$max_approval_time = $this->matchDuration($matchId)+$match_max_result_time;
+		
+		if($data['match_type'] == '0') {
+			if($data['match_type'] == '1') {
+				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_daily')*60;
+			} elseif ($data['match_type'] == '2') {
+				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_weekly')*60;
+			} elseif($data['match_type'] == '0') {
+				
+				$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
+			}
+		} else {
+			
+			$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
+		}
+		$max_approval_time = $this->matchDuration($data['id'])+$match_max_result_time;
 		if($current_time>$max_approval_time){
 			return false;
 		} else {

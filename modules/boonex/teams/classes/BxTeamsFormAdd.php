@@ -247,7 +247,7 @@ class BxTeamsFormAdd extends BxDolFormMedia
 
                 // images
 
-                /*'header_images' => array(
+                'header_images' => array(
                     'type' => 'block_header',
                     'caption' => _t('_bx_teams_form_header_images'),
                     'collapsable' => true,
@@ -283,7 +283,7 @@ class BxTeamsFormAdd extends BxDolFormMedia
 
                 // videos
 
-                'header_videos' => array(
+               /* 'header_videos' => array(
                     'type' => 'block_header',
                     'caption' => _t('_bx_teams_form_header_videos'),
                     'collapsable' => true,
@@ -393,7 +393,7 @@ class BxTeamsFormAdd extends BxDolFormMedia
                     ),
                 ),
 
-                //'allow_upload_photos_to' => $aInputPrivacyUploadPhotos,
+                'allow_upload_photos_to' => $aInputPrivacyUploadPhotos,
 
                 //'allow_upload_videos_to' => $aInputPrivacyUploadVideos,
 
