@@ -151,6 +151,8 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
 		$match_result = $this->getMatchResult($aData['id']);
 		//echo '<pre>';print_r($match_result);
+		//$this->permanentTeamInvitation($teamid);
+		
 		$match_result_played = $this->getMatchResultPlayed($aData['id']);
 		$pgdetails = $this->getPalgroundDetails($aData['playground']);
 		$match_not_played = $this->getMatchResultNotPlayed($aData['id']);
@@ -230,20 +232,14 @@ class BxMatchDb extends BxDolTwigModuleDb
 	
 	function maxApprovalTime($data) {
 		$current_time = time();
-		
+		$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
 		if($data['match_type'] == '0') {
 			if($data['match_type'] == '1') {
 				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_daily')*60;
 			} elseif ($data['match_type'] == '2') {
 				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_weekly')*60;
-			} elseif($data['match_type'] == '0') {
-				
-				$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
-			}
-		} else {
-			
-			$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
-		}
+			} 
+		} 
 		$max_approval_time = $this->matchDuration($data['id'])+$match_max_result_time;
 		if($current_time>$max_approval_time){
 			return false;
@@ -275,5 +271,43 @@ class BxMatchDb extends BxDolTwigModuleDb
 			$team_owner_id[] = $team_owner['id_profile'];
 		}
 		return $team_owner_id;
+	}
+	
+	function permanentTeamInvitation ($data) {
+		$time= time();
+		$team_ids = $this->getTeamFans($data['permanent_team'],1);
+		$iEntryId = $data['id'];
+		foreach ($team_ids as $team_id){
+			$individual_players[$team_id['ID']] = $team_id['ID'];
+		}
+		
+		foreach ($individual_players as $individual_player) {
+			$this->query(
+			"
+				INSERT IGNORE INTO
+					`bx_matches_fans`
+				SET
+					`id_entry` = '{$iEntryId}',
+					`id_profile` = '{$individual_player}',
+					`when` = '{$time}',
+					`confirmed`  = 0,
+					`type`  = '0'
+			");
+		}	
+	}
+	
+	function resetPracticeMatchInfo($data) {   
+		$iEntryId = $data['id'];
+		//match start date update
+		if($data['block_booking']==1) {
+			$start_date = $data['start_date']+($data['match_time']*60*60)+(24*60*60);
+		} elseif($data['block_booking']==2) {
+			$start_date = $data['start_date']+($data['match_time']*60*60)+(7*24*60*60);
+		}
+		$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date."' WHERE `id` = " . (int)$iEntryId);
+		//Reset match players and match result
+		$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
+		$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
+		
 	}
 }
