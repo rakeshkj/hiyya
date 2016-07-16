@@ -161,6 +161,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
 		$match_start_time_min = $this->getParam('bx_matches_start_mins');
 		$start_date = explode(' ', date('Y-m-d H:i:s',$aData['start_date']));
+		//Start 
 -		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60)+($match_start_time_min*60);
 		$current_time = time();
 		$time_after_hour = $this->matchDuration($aData['id']);
@@ -299,12 +300,13 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function resetPracticeMatchInfo($data) {   
 		$iEntryId = $data['id'];
 		//match start date update
+		$start_date = explode(' ', date('Y-m-d H:i:s',$data['start_date']));
 		if($data['block_booking']==1) {
-			$start_date = $data['start_date']+($data['match_time']*60*60)+(24*60*60);
+			$start_date_new = strtotime($start_date[0])+($data['match_time']*60*60)+(24*60*60);
 		} elseif($data['block_booking']==2) {
-			$start_date = $data['start_date']+($data['match_time']*60*60)+(7*24*60*60);
+			$start_date_new = strtotime($start_date[0])+($data['match_time']*60*60)+(7*24*60*60);
 		}
-		$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date."' WHERE `id` = " . (int)$iEntryId);
+		$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date_new."' WHERE `id` = " . (int)$iEntryId);
 		//Reset match players and match result
 		$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
 		$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
