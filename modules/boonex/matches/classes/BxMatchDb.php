@@ -150,6 +150,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function getMatchStatus($aData) {
 		$player_team = $this->getMatchPlayersCount($aData['id'], $aData['match_type']);
 		$match_result = $this->getMatchResult($aData['id']);
+		$current_time = time();
 		//echo '<pre>';print_r($match_result);
 		//$this->permanentTeamInvitation($teamid);
 		
@@ -161,9 +162,34 @@ class BxMatchDb extends BxDolTwigModuleDb
 		$match_max_result_time = $this->getParam('bx_matches_max_result_time');
 		$match_start_time_min = $this->getParam('bx_matches_start_mins');
 		$start_date = explode(' ', date('Y-m-d H:i:s',$aData['start_date']));
+		$start_date = $start_date[0];
 		//Start 
--		$start_time = strtotime($start_date[0])+($aData['match_time']*60*60)+($match_start_time_min*60);
-		$current_time = time();
+		//reset start date for block booking.
+		
+		if($aData['match_type']=='0' && $aData['block_booking']>0) { 
+			$match_interval_time = $this->getParam('bx_matches_interval_time')*60*60;
+			$iEntryId = $aData['id'];
+			$end_date = explode(' ', date('Y-m-d H:i:s',$aData['end_date']));
+			$end_date = strtotime($end_date[0]);
+			//match start date update
+			if($aData['block_booking_repeat'] == 0) {
+				if($aData['block_booking']==1) {
+					if ($end_date>($current_time+24*60*60+$match_interval_time))
+					$start_date = strtotime($start_date)+($aData['match_time']*60*60)+(24*60*60);
+				} elseif($aData['block_booking']==2) {
+					if ($end_date>($current_time+7*24*60*60+$match_interval_time) && $aData['block_booking_repeat'] == 0)
+					$start_date = strtotime($start_date)+($aData['match_time']*60*60)+(7*24*60*60);
+				}
+				$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date_new."' AND `block_booking_repeat` = '1' WHERE `id` = " . (int)$iEntryId);
+				//Reset match players and match result
+				$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
+				$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
+				$this->permanentTeamInvitation($aData);
+			}
+		}
+		
+		//end here
+-		$start_time = strtotime($start_date)+($aData['match_time']*60*60)+($match_start_time_min*60);
 		$time_after_hour = $this->matchDuration($aData['id']);
 		$submit_result_duraion = $time_after_hour+($match_max_result_time*60);
 		$match_status = 'Waiting for players';
@@ -281,35 +307,20 @@ class BxMatchDb extends BxDolTwigModuleDb
 		foreach ($team_ids as $team_id){
 			$individual_players[$team_id['ID']] = $team_id['ID'];
 		}
-		
-		foreach ($individual_players as $individual_player) {
-			$this->query(
-			"
-				INSERT IGNORE INTO
-					`bx_matches_fans`
-				SET
-					`id_entry` = '{$iEntryId}',
-					`id_profile` = '{$individual_player}',
-					`when` = '{$time}',
-					`confirmed`  = 0,
-					`type`  = '0'
-			");
-		}	
-	}
-	
-	function resetPracticeMatchInfo($data) {   
-		$iEntryId = $data['id'];
-		//match start date update
-		$start_date = explode(' ', date('Y-m-d H:i:s',$data['start_date']));
-		if($data['block_booking']==1) {
-			$start_date_new = strtotime($start_date[0])+($data['match_time']*60*60)+(24*60*60);
-		} elseif($data['block_booking']==2) {
-			$start_date_new = strtotime($start_date[0])+($data['match_time']*60*60)+(7*24*60*60);
+		if(!empty($individual_players)) {
+			foreach ($individual_players as $individual_player) {
+				$this->query(
+				"
+					INSERT IGNORE INTO
+						`bx_matches_fans`
+					SET
+						`id_entry` = '{$iEntryId}',
+						`id_profile` = '{$individual_player}',
+						`when` = '{$time}',
+						`confirmed`  = 0,
+						`type`  = '0'
+				");
+			}	
 		}
-		$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date_new."' WHERE `id` = " . (int)$iEntryId);
-		//Reset match players and match result
-		$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
-		$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
-		
-	}
+	} 
 }
