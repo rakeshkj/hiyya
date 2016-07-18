@@ -172,7 +172,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 			$end_date = explode(' ', date('Y-m-d H:i:s',$aData['end_date']));
 			$end_date = strtotime($end_date[0]);
 			//match start date update
-			if($aData['block_booking_repeat'] == 0) {
+			if($current_time> (strtotime($start_date)+($aData['match_time']*60*60)+$match_interval_time)) {
 				if($aData['block_booking']==1) {
 					if ($end_date>($current_time+24*60*60+$match_interval_time))
 					$start_date = strtotime($start_date)+($aData['match_time']*60*60)+(24*60*60);
@@ -180,7 +180,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 					if ($end_date>($current_time+7*24*60*60+$match_interval_time) && $aData['block_booking_repeat'] == 0)
 					$start_date = strtotime($start_date)+($aData['match_time']*60*60)+(7*24*60*60);
 				}
-				$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date_new."' AND `block_booking_repeat` = '1' WHERE `id` = " . (int)$iEntryId);
+				$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date."' AND `block_booking_repeat` = '1' WHERE `id` = " . (int)$iEntryId);
 				//Reset match players and match result
 				$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
 				$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
@@ -299,28 +299,4 @@ class BxMatchDb extends BxDolTwigModuleDb
 		}
 		return $team_owner_id;
 	}
-	
-	function permanentTeamInvitation ($data) {
-		$time= time();
-		$team_ids = $this->getTeamFans($data['permanent_team'],1);
-		$iEntryId = $data['id'];
-		foreach ($team_ids as $team_id){
-			$individual_players[$team_id['ID']] = $team_id['ID'];
-		}
-		if(!empty($individual_players)) {
-			foreach ($individual_players as $individual_player) {
-				$this->query(
-				"
-					INSERT IGNORE INTO
-						`bx_matches_fans`
-					SET
-						`id_entry` = '{$iEntryId}',
-						`id_profile` = '{$individual_player}',
-						`when` = '{$time}',
-						`confirmed`  = 0,
-						`type`  = '0'
-				");
-			}	
-		}
-	} 
 }

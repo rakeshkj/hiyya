@@ -532,4 +532,28 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 		
 		$iRet = $this->query ("UPDATE `bx_match_approval_players` SET `approved` ='0' WHERE `match_id` = '$matchId' AND `player_id` = '$playerId' LIMIT 1");
 	}
+	
+	function permanentTeamInvitation ($data) {
+		$time= time();
+		$team_ids = $this->getTeamFans($data['permanent_team'],1);
+		$iEntryId = $data['id'];
+		foreach ($team_ids as $team_id){
+			$individual_players[$team_id['ID']] = $team_id['ID'];
+		}
+		if(!empty($individual_players)) {
+			foreach ($individual_players as $individual_player) {
+				$this->query(
+				"
+					INSERT IGNORE INTO
+						`bx_matches_fans`
+					SET
+						`id_entry` = '{$iEntryId}',
+						`id_profile` = '{$individual_player}',
+						`when` = '{$time}',
+						`confirmed`  = 0,
+						`type`  = '0'
+				");
+			}	
+		}
+	} 
 }

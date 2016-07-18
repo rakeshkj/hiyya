@@ -778,6 +778,10 @@ class BxDolTwigModule extends BxDolModule
             $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => '');
 			$home_player = isset($_POST['players_list_practice'])? $_POST['players_list_practice'] :array();
 			$players_list = $home_player;
+				if($aDataEntry['block_booking']>0) {
+					
+					$this->_oDb->permanentTeamInvitation($aDataEntry);
+				}
 			}
             if ($oForm->insert ($aValsAdd)) {
 				$this->_oDb->matchPlayerScoreApproval($iEntryId,$players_list);
