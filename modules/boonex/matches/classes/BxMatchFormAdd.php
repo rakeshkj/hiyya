@@ -164,7 +164,8 @@ class BxMatchFormAdd extends BxDolFormMedia
 			if(!empty($user_check) && $match_eligibility_team==0)
 				continue;
 			if($val['fans_count'] <= $team_max_capacity && $val['fans_count']>=$pgdetails[0]['min_players'] && $val['fans_count']>=$team_min_capacity) {
-				$aTeams[$val['id']] = '<a target="_blank" href="m/teams/view/'.$val['uri'].'">'.$val['title'].'</a>';
+				//$aTeams[$val['id']] = '<a target="_blank" href="m/teams/view/'.$val['uri'].'">'.$val['title'].'</a>';
+				$aTeams[$val['id']] = $val['title'];
 				
 				/*array (
                 'title' => $val['title'],
@@ -286,7 +287,7 @@ class BxMatchFormAdd extends BxDolFormMedia
                     ),
                 ),
 				'permanent_team' => array(
-                    'type' => 'radio_set',
+                    'type' => 'select',
                     'name' => 'permanent_team',
                     'caption' => _t('_bx_matches_form_caption_team_permanent'),
 					'values' => $aTeams,
