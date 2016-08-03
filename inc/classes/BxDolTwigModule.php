@@ -2166,5 +2166,9 @@ class BxDolTwigModule extends BxDolModule
         $s = $this->_formatSnippetText($aEntryData, 200);
         return $s;
     }
-
+	function getIconFromText($image_name) {
+		
+		$icon_url = BX_DOL_URL_ROOT.'media/images/icons/'.$image_name.'.png';
+		return $icon_url;
+	}
 }

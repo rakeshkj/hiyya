@@ -24,7 +24,7 @@ class BxTeamsTemplate extends BxDolTwigTemplate
     function unit ($aData, $sTemplateName, &$oVotingView, $isShort = false)
     {
 		$team_detail = $this->_oDb->getTeamDetails($aData['id']);
-		$join_type =  ($team_detail[0]['join_confirmation'] == 0)?'Open':'Invitation Only';
+		$join_type =  ($team_detail[0]['join_confirmation'] == 0)?'open_icon':'invite_only';
         if (null == $this->_oMain)
             $this->_oMain = BxDolModule::getInstance('BxTeamsModule');
 
@@ -39,13 +39,13 @@ class BxTeamsTemplate extends BxDolTwigTemplate
             $aImage = BxDolService::call('photos', 'get_image', array($a, 'browse'), 'Search');
             $sImage = $aImage['no_image'] ? '' : $aImage['file'];
         }
-
+//echo $this->_oMain->getIconFromText('5aside');
         $aVars = array (
             'id' => $aData['id'],
             'thumb_url' => $sImage ? $sImage : $this->getImageUrl('no-image-thumb.png'),
             'team_url' => BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aData['uri'],
             'team_title' => $aData['title'],
-			'join_type'  => $join_type,
+			'join_type_icon'  => $this->_oMain->getIconFromText($join_type),//$join_type,
             'created' => defineTimeInterval($aData['created']),
             'fans_count' => $aData['fans_count'],
             'country_city' => $this->_oMain->_formatLocation($aData),
