@@ -304,7 +304,7 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 	//Team functions
 	function getPublicTeam ($id)
     {
-        return $this->getAll ("SELECT `id`,`title`,`uri`,`author_id`,`fans_count` FROM `bx_teams_main` WHERE `Status` = 'Approved' AND `allow_view_team_to` = 3 GROUP By `author_id`");
+        return $this->getAll ("SELECT `id`,`title`,`uri`,`author_id`,`fans_count` FROM `bx_teams_main` WHERE `Status` = 'Approved' AND `allow_view_team_to` = 3");
     }
 	function getTeamFans($iEntryId, $isConfirmed)
     {
@@ -556,4 +556,10 @@ class BxDolTwigModuleDb extends BxDolModuleDb
 			}	
 		}
 	} 
+	
+	function getTeamPlayersCount($teamid) {    
+		
+		$team_players_count =  $this->getAll ("SELECT count(id_profile) as player_count FROM `bx_teams_fans` WHERE id_entry='".$teamid."' AND `confirmed`=1" );	
+		return $team_players_count;
+	}
 }

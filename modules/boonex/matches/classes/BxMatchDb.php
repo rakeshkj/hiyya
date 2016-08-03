@@ -84,8 +84,13 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getTeamPlayers(&$aProfiles, $iEntryId, $isConfirmed, $type, $team_id)
     {
+		$where = '';
         $isConfirmed = $isConfirmed ? 1 : 0;
-        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = $isConfirmed AND `f`.`type` = '$type' AND `f`.`team_id` = '$team_id' AND `p`.`Status` = 'Active') GROUP BY `f`.`id_profile` ORDER BY  `f`.`when` DESC ");
+		if($team_id>0) {
+			$where = "AND `f`.`team_id` = '$team_id'";
+		}
+		
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = $isConfirmed AND `f`.`type` = '$type' $where  AND `p`.`Status` = 'Active') GROUP BY `f`.`id_profile` ORDER BY  `f`.`when` DESC ");
         return $this->getOne("SELECT FOUND_ROWS()");
     }
 	
@@ -167,20 +172,20 @@ class BxMatchDb extends BxDolTwigModuleDb
 		//reset start date for block booking.
 		
 		if($aData['match_type']=='0' && $aData['block_booking']>0) { 
-			$match_interval_time = $this->getParam('bx_matches_interval_time')*60*60;
+			$match_interval_time = $this->getParam('bx_matches_interval_time')*60;//*60
 			$iEntryId = $aData['id'];
 			$end_date = explode(' ', date('Y-m-d H:i:s',$aData['end_date']));
 			$end_date = strtotime($end_date[0]);
 			//match start date update
-			if($current_time> (strtotime($start_date)+($aData['match_time']*60*60)+$match_interval_time)) {
+			if($current_time> (strtotime($start_date)+($aData['match_time']*60*60)+$match_interval_time*60)) {
 				if($aData['block_booking']==1) {
 					if ($end_date>($current_time+24*60*60+$match_interval_time))
 					$start_date = strtotime($start_date)+($aData['match_time']*60*60)+(24*60*60);
 				} elseif($aData['block_booking']==2) {
-					if ($end_date>($current_time+7*24*60*60+$match_interval_time) && $aData['block_booking_repeat'] == 0)
+					if ($end_date>($current_time+7*24*60*60+$match_interval_time))
 					$start_date = strtotime($start_date)+($aData['match_time']*60*60)+(7*24*60*60);
 				}
-				$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date."' AND `block_booking_repeat` = '1' WHERE `id` = " . (int)$iEntryId);
+				$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date."', `block_booking_repeat` = '1' WHERE `id` = " . (int)$iEntryId);
 				//Reset match players and match result
 				$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
 				$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
@@ -257,17 +262,19 @@ class BxMatchDb extends BxDolTwigModuleDb
 		return $this->getRow ("SELECT * FROM `bx_match_result` where `match_id`= '".$matchid."' AND `match_played`='1' ORDER BY date_created LIMIT 1");
 	}
 	
-	function maxApprovalTime($data) {
+	function maxApprovalTime($datas) {
 		$current_time = time();
 		$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
-		if($data['match_type'] == '0') {
-			if($data['match_type'] == '1') {
+		$match_type = $datas['match_type'];
+		$match_id = $datas['id'];
+		if($match_type == '0') {
+			if($datas['block_booking'] == '1') {
 				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_daily')*60;
-			} elseif ($data['match_type'] == '2') {
+			} elseif ($datas['block_booking'] == '2') {
 				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_weekly')*60;
 			} 
 		} 
-		$max_approval_time = $this->matchDuration($data['id'])+$match_max_result_time;
+		$max_approval_time = $this->matchDuration($match_id)+$match_max_result_time;
 		if($current_time>$max_approval_time){
 			return false;
 		} else {

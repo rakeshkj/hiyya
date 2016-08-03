@@ -144,9 +144,11 @@ class BxMatchFormAdd extends BxDolFormMedia
 		
 		//applicable team list
 		$aTeamList = $oMain->_oDb->getPublicTeam($oMain->_iProfileId);
+		//echo '<pre>';print_r($aTeamList);
 		$team_max_capacity = $oMain->_oDb->getParam('bx_teams_team_max_capacity');
 		$team_min_capacity = $oMain->_oDb->getParam('bx_teams_team_min_capacity');
 		foreach ($aTeamList as $key => $val) {
+			$team_player_count = $oMain->_oDb->getTeamPlayersCount($val['id']);
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$val['author_id'],$val['id'],'t');
 			$sechudle_check_teams = $oMain->_oDb->isScheduled($val['id'],0);
 			if($sechudle_check_teams==0){
@@ -163,7 +165,7 @@ class BxMatchFormAdd extends BxDolFormMedia
 			}    
 			if(!empty($user_check) && $match_eligibility_team==0)
 				continue;
-			if($val['fans_count'] <= $team_max_capacity && $val['fans_count']>=$pgdetails[0]['min_players'] && $val['fans_count']>=$team_min_capacity) {
+			if($team_player_count[0]['player_count'] <= $team_max_capacity && $team_player_count[0]['player_count']>=$pgdetails[0]['min_players'] && $team_player_count[0]['player_count']>=$team_min_capacity) {
 				//$aTeams[$val['id']] = '<a target="_blank" href="m/teams/view/'.$val['uri'].'">'.$val['title'].'</a>';
 				$aTeams[$val['id']] = $val['title'];
 				

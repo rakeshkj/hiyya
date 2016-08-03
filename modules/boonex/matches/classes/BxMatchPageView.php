@@ -418,6 +418,12 @@ class BxMatchPageView extends BxDolTwigPageView
 						'invite_link'=> 'm/matches/inviteteamplayers/'.$this->aDataEntry[$this->_oDb->_sFieldId].'/'.$aProfile['team_id']
 					)
                 ),
+				'bx_if:pmatch' => array (
+                    'condition' => false,
+                    'content' => array (
+						'player_response_practice'=> $player_response
+					)
+                ),
             );
 			if($this->aDataEntry['match_type'] == 1){
 				if($i==0) {
@@ -509,12 +515,13 @@ class BxMatchPageView extends BxDolTwigPageView
 				$players = $home_players_array;
 			}
 		}
+		//echo '<pre>';print_r($aProfiles);
         foreach($aProfiles as $aProfile) {
 			$sProfileThumbPlayer = array ();
 			$player_response = '';
 			$checkbox = '';
-			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, 'p',$aProfile['team_id']);
-			
+			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, $aProfile['type'],$aProfile['team_id']);
+			//echo '<pre>';print_r($aPlayersProfiles);
 			foreach ($aPlayersProfiles as $aPlayersProfile) {
 				if($this->_oMain->_iProfileId==$aProfile['id_profile']) {
 					
@@ -522,14 +529,17 @@ class BxMatchPageView extends BxDolTwigPageView
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
 			}
 			       if(!empty($players)) {      
+				   //$this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId])
 					   if(in_array($aPlayersProfile['id_profile'], $players)) {
-						if($this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId]) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {  
+						if($this->_oDb->maxApprovalTime($this->aDataEntry) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {  
 						   
 $player_response = <<<EOR
 
 <button onclick="getHtmlData('sys_manage_items_player_response_content', '{$match_uri}?ajax_action=reject_score&amp;ids={$aProfile['id_profile']}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
 
 EOR;
+						} else {
+							$player_response = '';
 						}
 
 					   } else {
@@ -538,6 +548,8 @@ EOR;
 					} 
 					
 				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response);
+				
+				//$sProfileThumbPlayerPractice[] = array ('player_response' => $player_response);
 			}
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
             $aVars = array(
@@ -572,6 +584,12 @@ EOR;
                     'condition' => $aProfile['id_profile'] == $this->_oMain->_iProfileId,
                     'content' => array (
 						'invite_link'=> 'm/matches/inviteteamplayers/'.$this->aDataEntry[$this->_oDb->_sFieldId].'/'.$aProfile['team_id']
+					)
+                ),
+				'bx_if:pmatch' => array (
+                    'condition' => !empty($player_response),
+                    'content' => array (
+						'player_response_practice'=> $player_response
 					)
                 ),
             );
