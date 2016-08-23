@@ -34,11 +34,27 @@ class BxTeamsTemplate extends BxDolTwigTemplate
         }
 
         $sImage = '';
+		$team_status = '';
         if ($aData['thumb']) {
             $a = array ('ID' => $aData['author_id'], 'Avatar' => $aData['thumb']);
             $aImage = BxDolService::call('photos', 'get_image', array($a, 'browse'), 'Search');
             $sImage = $aImage['no_image'] ? '' : $aImage['file'];
         }
+		
+		$member_count = $aData['fans_count'];
+		$team_max_capacity = $this->_oDb->getParam('bx_teams_team_max_capacity');
+		$team_min_capacity = $this->_oDb->getParam('bx_teams_team_min_capacity');
+		if($member_count >= $team_max_capacity) {
+			$team_status = 'status_team_max_capacity_reached';
+			
+		} elseif($member_count >= $team_min_capacity) {
+			$team_status = 'status_team_Complete';
+			
+		} else {
+			$team_status = 'status_team_Incomplete';
+		}
+		$team_status = $this->_oMain->getIconFromText($team_status);
+		
 //echo $this->_oMain->getIconFromText('5aside');
         $aVars = array (
             'id' => $aData['id'],
@@ -46,6 +62,7 @@ class BxTeamsTemplate extends BxDolTwigTemplate
             'team_url' => BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aData['uri'],
             'team_title' => $aData['title'],
 			'join_type_icon'  => $this->_oMain->getIconFromText($join_type),//$join_type,
+			'team_status'  => $team_status,//$join_type,
             'created' => defineTimeInterval($aData['created']),
             'fans_count' => $aData['fans_count'],
             'country_city' => $this->_oMain->_formatLocation($aData),

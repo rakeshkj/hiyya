@@ -127,7 +127,32 @@ class BxMatchPageView extends BxDolTwigPageView
         $aAuthor = getProfileInfo($aData['author_id']);
 		$type = $aData['match_type'];
 		$size = $aData['max_players'];
-		$match_type = ($type==0)?'Practice':'Team';
+		$match_type_additional = '';
+		$additional_image = '';
+		//$match_type = ($type==0)?'Practice':'Team';
+		if($aData['match_type'] == 0){
+			
+			if($aData['block_booking']==0) {
+				$match_type = 'practice_match';
+			}else{ 
+				if($aData['block_booking']==1) {
+					$match_type = 'practice_match';
+					$match_type_additional = 'Repeated-Match_daily';
+				} elseif($aData['block_booking']==2) {
+					$match_type = 'practice_match';
+					$match_type_additional = 'Repeated-Match_weekly';
+				}
+			}
+			
+		} else {
+			
+			$match_type = 'team_match';
+		}
+		$match_type = $this->_oMain->getIconFromText($match_type);
+		if($match_type_additional!='') {
+		$match_type_additional = $this->_oMain->getIconFromText($match_type_additional);
+		$additional_image = '<img class="matchtypea" src="'.$match_type_additional.'" alt="">';
+		}
 		//$match_size = ($cat==0)?'5-a-side':'10-a-side';
 		$pg_id = $aData['playground'];
 		$pgdetails = $this->_oDb->getPalgroundDetails($pg_id);
@@ -136,6 +161,26 @@ class BxMatchPageView extends BxDolTwigPageView
 		//echo '<pre>';print_r($aData);
 		$gender_type = $aData['gender'];
 		$match_status = $this->_oDb->getMatchStatus($aData);
+		if($match_status == 'Waiting for players') {
+			$match_status_icon = 'Waiting';
+		} elseif($match_status == 'Scheduled') {
+			$match_status_icon = 'status_match_scheduled';
+		} elseif($match_status == 'Cancelled') {
+			$match_status_icon = 'Status_Cancelled';
+		} elseif($match_status == 'Kick off') {
+			$match_status_icon = 'status_match_Kickoff';
+		} elseif($match_status == 'Time Up/Waiting for Results') {
+			$match_status_icon = 'status_match_Timeup';
+		} elseif($match_status == 'Waiting for Result Confirmation') {
+			$match_status_icon = 'status_waitingConfirmation';
+		} elseif($match_status == 'No Match Result') {
+			$match_status_icon = 'no_match_result';
+		} elseif($match_status == 'Played') {
+			$match_status_icon = 'status_match_Played';
+		}
+		
+		$match_status_icon = $this->_oMain->getIconFromText($match_status_icon);
+		
 		if($pg_type ==0 ){
 			$playground ='Grass';
 		} elseif($pg_type ==1) {
@@ -181,14 +226,20 @@ class BxMatchPageView extends BxDolTwigPageView
 			$gender ='Female';
 		} elseif ($gender_type == 2) {
 			
-			$gender ='Any';
+			$gender ='';
 		}
-		
+		if($gender!='') {
+			$gender = $this->_oMain->getIconFromText($gender);
+			$gender = '<div class="infoUnit infoUnitFontIcon">
+              <b> Gender : </b> <img class="gendertype" src="'.$gender.'" alt="">
+            </div>	<br>';	
+		} 
         $aVars = array (
             'author_unit' => get_member_thumbnail($aAuthor['ID'], 'none', true),
             'date' => getLocaleDate($aData['created'], BX_DOL_LOCALE_DATE_SHORT),
             'date_ago' => defineTimeInterval($aData['created']),
             'match_type' => $match_type,
+			'additional_image' => $additional_image,
 			//'match_size' => $match_size,
 			'max_subtitude' => $aData['max_subtitude'],
 			'place' => $aData['place'],
@@ -202,7 +253,7 @@ class BxMatchPageView extends BxDolTwigPageView
 			'gender' => $gender,
 			'payment' => $aData['payment'],
             'author_unit' => $GLOBALS['oFunctions']->getMemberThumbnail($aAuthor['ID'], 'none', true),
-			'match_status' => $match_status,
+			'match_status' => $match_status_icon,
             'location' => $sLocation,
         );
         return $this->_oTemplate->parseHtmlByName('entry_view_block_info', $aVars);
@@ -539,11 +590,11 @@ $player_response = <<<EOR
 
 EOR;
 						} else {
-							$player_response = '';
+							$player_response = "";
 						}
 
 					   } else {
-						  $player_response =  '<img src="'.$image_icon.'" alt="Result not submitted">';    
+						  $player_response =  'strikethrough';//'<img src="'.$image_icon.'" alt="Result not submitted">';    
 					   }
 					} 
 					
@@ -551,6 +602,33 @@ EOR;
 				
 				//$sProfileThumbPlayerPractice[] = array ('player_response' => $player_response);
 			}
+			//practice match response
+			if($this->aDataEntry['match_type'] == 0){ 
+			
+				if(!empty($players)) {      
+				   //$this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId])
+					   if(in_array($aProfile['id_profile'], $players)) {
+						if($this->_oDb->maxApprovalTime($this->aDataEntry) && $aProfile['id_profile'] == $this->_oMain->_iProfileId) {  
+						   
+$player_response_practice = <<<EOR
+
+<button onclick="getHtmlData('sys_manage_items_player_response_content', '{$match_uri}?ajax_action=reject_score&amp;ids={$aProfile['id_profile']}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
+
+EOR;
+						} else {
+							$player_response_practice = " ";
+						}
+
+					   } else {
+						  $player_response_practice =  'strikethrough';//'<img src="'.$image_icon.'" alt="Result not submitted">';    
+					   }
+					} 
+			}
+			if($player_response_practice=='' || $player_response=='') {
+				
+				echo "<script>$('.thumb_username').removeClass('strikethrough')</script>";
+			}
+			//end here
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
             $aVars = array(
                 'id' => $aProfile['ID'],
@@ -587,9 +665,9 @@ EOR;
 					)
                 ),
 				'bx_if:pmatch' => array (
-                    'condition' => !empty($player_response),
+                    'condition' => !empty($player_response_practice),
                     'content' => array (
-						'player_response_practice'=> $player_response
+						'player_response_practice'=> $player_response_practice
 					)
                 ),
             );

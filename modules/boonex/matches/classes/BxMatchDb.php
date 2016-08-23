@@ -68,7 +68,7 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getMatchDetails ($id)
     {
-        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time,playground FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time,playground,block_booking,gender FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 	
 	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type='')

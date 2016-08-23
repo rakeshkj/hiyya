@@ -63,38 +63,40 @@ class BxMatchPagePgview extends BxDolTwigPageView
 		$pitch_type = $aData['pitch_type'];
 		$indoor_type = $aData['indoor'];
 		if($type ==0 ){
-			$matchtype ='5-a-side';
+			$matchtype ='5aside';
 		} elseif($type ==1) {
 			
-			$matchtype ='7-a-side';
+			$matchtype ='7aside';
 			
-		} elseif ($type ==1) {
+		} elseif ($type ==2) {
 			
-			$matchtype ='7-a-side';
+			$matchtype ='11aside';
 		}
+		$matchtype = $this->_oMain->getIconFromText($matchtype);
 		if($pitch_type ==0 ){
-			$pitchtype ='Grass';
+			$pitchtype ='Real-grass';
 		} elseif($pitch_type ==1) {
 			
 			$pitchtype ='Artificial';
 			
 		} elseif ($pitch_type ==2) {
 			
-			$pitchtype ='Hard';
+			$pitchtype ='Hard-floor';
 		} elseif ($pitch_type ==3) {
 			
 			$pitchtype ='Sand';
 		} elseif ($pitch_type ==4) {
 			
-			$pitchtype ='Other';
+			$pitchtype ='No-field';
 		}
-		
+		$pitchtype = $this->_oMain->getIconFromText($pitchtype);
 		if($indoor_type ==0 ){
-			$indoor ='No';
+			$indoor ='Outdoor';
 		} elseif($indoor_type ==1) {
 			
-			$indoor ='Yes';
-		}	
+			$indoor ='Indoor';
+		}
+		$indoor = $this->_oMain->getIconFromText($indoor);		
         $aVars = array (
             'author_unit' => get_member_thumbnail($aAuthor['ID'], 'none', true),
             'date' => getLocaleDate($aData['created'], BX_DOL_LOCALE_DATE_SHORT),

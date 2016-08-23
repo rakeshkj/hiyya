@@ -122,7 +122,8 @@ class BxTeamsPageView extends BxDolTwigPageView
     {
         $aAuthor = getProfileInfo($aData['author_id']);
 		$cat = $this->_oTemplate->parseCategories($aData['categories']);
-		$category = ($cat==0)?'5-a-side':'10-a-side';
+		$category = ($cat==0)?'5aside':'11aside';
+		$category = $this->_oMain->getIconFromText($category);
 		$range_in_km = $aData['city'];
 		$team_locations = $aData['zip'];
 		
@@ -130,14 +131,15 @@ class BxTeamsPageView extends BxDolTwigPageView
 		$team_max_capacity = $this->_oDb->getParam('bx_teams_team_max_capacity');
 		$team_min_capacity = $this->_oDb->getParam('bx_teams_team_min_capacity');
 		if($member_count >= $team_max_capacity) {
-			$team_status = 'Team maximum capacity reached';
+			$team_status = 'status_team_max_capacity_reached';
 			
 		} elseif($member_count >= $team_min_capacity) {
-			$team_status = 'Complete';
+			$team_status = 'status_team_Complete';
 			
 		} else {
-			$team_status = 'Team is incomplete';
+			$team_status = 'status_team_Incomplete';
 		}
+		$team_status = $this->_oMain->getIconFromText($team_status);
 		//echo $team_locations;die;
         $aVars = array (
             'author_unit' => get_member_thumbnail($aAuthor['ID'], 'none', true),

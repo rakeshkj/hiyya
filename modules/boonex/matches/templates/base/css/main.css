@@ -28,3 +28,29 @@
     max-height:280px;
     overflow-y:auto;
 }
+.matchtype {
+	margin-left:86px;
+	margin-top:-3px;
+}
+.gametype {
+	margin-left:80px;
+}
+.pitchtype {
+	margin-left:80px;
+}
+.matchstatus {
+	margin-left:95px;
+	margin-top:-4px;
+}
+.gendertype {
+	margin-left:80px;
+	margin-top:-14px;
+}
+.matchtypea {
+	margin-left:129px;
+	margin-top:-3px;
+}
+
+.strikethrough{
+  text-decoration:line-through;
+}
