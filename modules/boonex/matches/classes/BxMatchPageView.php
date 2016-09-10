@@ -129,7 +129,23 @@ class BxMatchPageView extends BxDolTwigPageView
 		$size = $aData['max_players'];
 		$match_type_additional = '';
 		$additional_image = '';
-		//$match_type = ($type==0)?'Practice':'Team';
+		$teams = '';$payment = '';
+		$join_conf = $aData['join_confirmation'];
+		if($join_conf == 0) {
+			$join_type = $this->_oMain->getIconFromText('open_icon');
+		} elseif($join_conf == 1) {
+			$join_type = $this->_oMain->getIconFromText('invite_only');
+		}
+		$playground_details = $this->_oDb->getPalgroundDetails($aData['playground']);
+		if($playground_details['type'] == 0) {
+			$pg_type = $this->_oMain->getIconFromText('5aside');
+		} elseif ($playground_details['type'] == 1) {
+			$pg_type = $this->_oMain->getIconFromText('7aside');
+		} elseif ($playground_details['type'] == 2) {
+			$pg_type = $this->_oMain->getIconFromText('11aside');
+		}
+		$join_type = '<img class="pgicon" src="'.$join_type.'" alt="">';
+		$playground_type = 	'<img class="pgicon" src="'.$pg_type.'" alt="">';
 		if($aData['match_type'] == 0){
 			
 			if($aData['block_booking']==0) {
@@ -142,23 +158,36 @@ class BxMatchPageView extends BxDolTwigPageView
 					$match_type = 'practice_match';
 					$match_type_additional = 'Repeated-Match_weekly';
 				}
+				
+			$end_date = date('Y-m-d',$aData['end_date']);
+			$match_time = $aData['match_time'].":00";
 			}
-			
+			$match_type_icon = $this->_oMain->getIconFromText($match_type);
+			$match_type_icon = '<img class="pgicon"  src="'.$match_type_icon.'" alt="">';
+			$teams = $match_type_icon ;
+			//end date
 		} else {
 			
+			$team_id = $this->_oDb->getMatchTeamId($aData['id']);
+		    $match_team1 = $this->_oDb->getTeamDetails($team_id[0]);
+			$match_team2 = $this->_oDb->getTeamDetails($team_id[1]);
+			//echo '<pre>';print_r($team_id);
 			$match_type = 'team_match';
+			$match_type_icon = $this->_oMain->getIconFromText($match_type);
+			$match_type_icon = '<img class="pgicon matchtypem"  src="'.$match_type_icon.'" alt="">';
+			$teams = '['.$match_team1[0]['title'] .'&nbsp;'.$match_type_icon.'&nbsp;'. $match_team2[0]['title'].']';
+			$end_date = '';
+			$match_time = '';
 		}
 		$match_type = $this->_oMain->getIconFromText($match_type);
 		if($match_type_additional!='') {
 		$match_type_additional = $this->_oMain->getIconFromText($match_type_additional);
-		$additional_image = '<img class="matchtypea" src="'.$match_type_additional.'" alt="">';
+		$additional_image = '<img class="pgicon" src="'.$match_type_additional.'" alt="">';
 		}
-		//$match_size = ($cat==0)?'5-a-side':'10-a-side';
 		$pg_id = $aData['playground'];
 		$pgdetails = $this->_oDb->getPalgroundDetails($pg_id);
 		$pglink = $this->_oMain->_oConfig->getBaseUri().'pgview/'.$pgdetails[0]['uri'];
 		$pg_block_booking  = $aData['block_booking'];
-		//echo '<pre>';print_r($aData);
 		$gender_type = $aData['gender'];
 		$match_status = $this->_oDb->getMatchStatus($aData);
 		if($match_status == 'Waiting for players') {
@@ -230,31 +259,44 @@ class BxMatchPageView extends BxDolTwigPageView
 		}
 		if($gender!='') {
 			$gender = $this->_oMain->getIconFromText($gender);
-			$gender = '<div class="infoUnit infoUnitFontIcon">
-              <b> Gender : </b> <img class="gendertype" src="'.$gender.'" alt="">
-            </div>	<br>';	
+			$gender = '<img class="pgicon" src="'.$gender.'" alt="">';	
 		} 
+		$pgicon = $this->_oMain->getIconFromText('Playground-Icon');
+		$pgicon = '<img class="pgicon" src="'.$pgicon.'" alt="">';	
+		$price_icon = $this->_oMain->getIconFromText('Price-Icon');
+		$price_icon = '<img class="pgicon" src="'.$price_icon.'" alt="">';
+		$clock_icon = $this->_oMain->getIconFromText('clock_icon');
+		$clock_icon = '<img class="pgicon" src="'.$clock_icon.'" alt="">';
+		if(!empty($aData['payment'])) {
+			
+			$payment = $price_icon . $aData['payment'];
+		}
         $aVars = array (
             'author_unit' => get_member_thumbnail($aAuthor['ID'], 'none', true),
             'date' => getLocaleDate($aData['created'], BX_DOL_LOCALE_DATE_SHORT),
             'date_ago' => defineTimeInterval($aData['created']),
             'match_type' => $match_type,
 			'additional_image' => $additional_image,
-			//'match_size' => $match_size,
+			'match_name' => $aData['title'],
 			'max_subtitude' => $aData['max_subtitude'],
 			'place' => $aData['place'],
 			'start_date' => date('Y-m-d',$aData['start_date']),
-			'end_date' => date('Y-m-d',$aData['end_date']),
-			'match_time' => $aData['match_time'].":00",
+			'end_date' => $end_date,
+			'match_time' => $match_time,
 			'block_booking' => $block_booking,
 			'playground' => $pglink,
 			'pgtitle' => $pgdetails[0]['title'],
+			'pgicon'  => $pgicon,
+			'join_type' => $join_type,
 			'max_age' => $aData['max_age'],
 			'gender' => $gender,
-			'payment' => $aData['payment'],
+			'payment' => $payment,
             'author_unit' => $GLOBALS['oFunctions']->getMemberThumbnail($aAuthor['ID'], 'none', true),
 			'match_status' => $match_status_icon,
+			'teams' => $teams,
+			'clock_icon' => $clock_icon,
             'location' => $sLocation,
+			'pg_type' => $playground_type,
         );
         return $this->_oTemplate->parseHtmlByName('entry_view_block_info', $aVars);
     }

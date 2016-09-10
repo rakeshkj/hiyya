@@ -215,6 +215,97 @@ class BxMatchPlaygroundFormAdd extends BxDolFormMedia
                         'pass' => 'XssHtml',
                     ),
                 ),
+				'ballhire' => array(
+                    'type' => 'radio_set',
+                    'name' => 'ballhire',
+                    'caption' => _t('_bx_matches_form_caption_ballhire'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
+				'ballbump' => array(
+                    'type' => 'radio_set',
+                    'name' => 'ballbump',
+                    'caption' => _t('_bx_matches_form_caption_ballbump'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
+				'netted' => array(
+                    'type' => 'radio_set',
+                    'name' => 'netted',
+                    'caption' => _t('_bx_matches_form_caption_netted'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
+				'withlines' => array(
+                    'type' => 'radio_set',
+                    'name' => 'withlines',
+                    'caption' => _t('_bx_matches_form_caption_withlines'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
+				'shop' => array(
+                    'type' => 'radio_set',
+                    'name' => 'shop',
+                    'caption' => _t('_bx_matches_form_caption_shop'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
+				'WC' => array(
+                    'type' => 'radio_set',
+                    'name' => 'WC',
+                    'caption' => _t('_bx_matches_form_caption_WC'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
+				'water' => array(
+                    'type' => 'radio_set',
+                    'name' => 'water',
+                    'caption' => _t('_bx_matches_form_caption_water'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_no'),
+                    1 => _t('_bx_matches_form_caption_yes')
+					),
+					'value' => 0,
+                    'db' => array (
+                        'pass' => 'XssHtml',
+                    ),
+                ),
 				'price_per_hour' => array(
                     'type' => 'text',
                     'name' => 'price_per_hour',

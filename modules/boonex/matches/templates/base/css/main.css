@@ -54,3 +54,10 @@
 .strikethrough{
   text-decoration:line-through;
 }
+.pgicon{
+  margin-bottom:-14px;
+}
+.matchtypem {
+	margin-left:2px;
+	margin-right:5px;
+}
