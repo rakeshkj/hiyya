@@ -1,26 +1,47 @@
 
 <div class="bx-twig-unit bx_groups_unit bx-def-margin-top-auto">
 
-    <div class="bx-twig-unit-thumb-cont bx-def-margin-sec-right">
+    <!--div class="bx-twig-unit-thumb-cont bx-def-margin-sec-right">
         <a href="__match_url__"><img class="bx-twig-unit-thumb bx-def-round-corners bx-def-shadow" src="__thumb_url__"></a>
-    </div>
+    </div-->
 
     <div class="searchrow_block_simple sys_fan_unit bx-def-margin-sec-top-auto">
 
-        <div class="bx-twig-unit-title bx-def-font-h2">
+        <!--div class="bx-twig-unit-title bx-def-font-h2">
             <a href="__match_url__">__match_title__</a>
-        </div>
+        </div-->
 
         <div class="bx-twig-unit-line bx-twig-unit-desc">__snippet_text__</div>
 
-        <div class="bx-twig-unit-line bx-twig-unit-special">__fans_count__ <bx_text:_bx_matches_fans /></div>
+        <!--div class="bx-twig-unit-line bx-twig-unit-special">__fans_count__ <bx_text:_bx_matches_fans /></div-->
 
-        <div class="bx-twig-unit-line">__country_city__</div>
-		<div class="bx-twig-unit-line"><img src="__match_status__" alt="">&nbsp;<img src="__match_type__" alt="">&nbsp;__additional_image__&nbsp;__gender__&nbsp;<img src="__join_type__" alt=""></div>
+        <!--div class="bx-twig-unit-line">__country_city__</div-->
+		
+		<div class="bx-twig-unit-line">
+		<img class="pgicon"  src="__match_status__" alt=""> &nbsp;
+				<span class="bx-twig-unit-title bx-def-font-h2"><a href="__match_url__">__match_title__</a> &nbsp; &nbsp; __teams__ &nbsp;</span>
+               	
+		</div>
+		<br>
+		<div class="bx-twig-unit-line">
+			<!--__max_subtitude__ &nbsp;-->
+            __clock_icon__  __start_date__ &nbsp;__match_time__ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            __additional_image__  __end_date__ &nbsp;&nbsp;&nbsp;&nbsp;
+			__pgicon__
+			<a href="__playground__" target="_blank">__pgtitle__ </a> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			__pg_type__ &nbsp;
+			__join_type__ &nbsp;
+			__max_age__ &nbsp;
+			__gender__	&nbsp;&nbsp;&nbsp;
+			__payment__ &nbsp;
+             
+            
+        </div><br><br>
+		<!--div class="bx-twig-unit-line"><img src="__match_type__" alt="">&nbsp;__additional_image__&nbsp;__gender__&nbsp;<img src="__join_type__" alt=""></div-->
 		<!--div class="bx-twig-unit-line">__join_type__ Join</div> 
 		<div class="bx-twig-unit-line">Match Status :  __match_status__</div--> 	
 
-        <bx_if:full>
+        <!--bx_if:full>
 
             <div class="bx-twig-unit-line bx-twig-unit-rate">
                 __rate__
@@ -30,7 +51,7 @@
                 __created__ <span class="bullet">&#183;</span> <bx_text:_From /> <a href="__author_url__">__author__</a>
             </div>
 
-        </bx_if:full>
+        </bx_if:full-->
 
     </div>    
 

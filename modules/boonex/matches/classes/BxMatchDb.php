@@ -68,7 +68,7 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getMatchDetails ($id)
     {
-        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time,playground,block_booking,gender FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time,playground,block_booking,gender,payment FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 	
 	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type='')
@@ -314,5 +314,14 @@ class BxMatchDb extends BxDolTwigModuleDb
 			$team_all_id[] = $team_id['team_id'];
 		}
 		return $team_all_id;
+	}
+	
+	function getConfirmedPlayersPractice ($matchId) {
+		
+		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchId."' AND `confirmed`='1'");	
+	}
+	function getConfirmedPlayersTeam ($matchId,$teamId) {
+		
+		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchId."' AND team_id ='".$teamId."' AND `confirmed`='1'");	
 	}
 }

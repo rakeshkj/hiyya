@@ -137,17 +137,21 @@ class BxMatchPageView extends BxDolTwigPageView
 			$join_type = $this->_oMain->getIconFromText('invite_only');
 		}
 		$playground_details = $this->_oDb->getPalgroundDetails($aData['playground']);
-		if($playground_details['type'] == 0) {
+		if($playground_details[0]['type'] == 0) {
 			$pg_type = $this->_oMain->getIconFromText('5aside');
-		} elseif ($playground_details['type'] == 1) {
+			$pg_count = 5;
+		} elseif ($playground_details[0]['type'] == 1) {
 			$pg_type = $this->_oMain->getIconFromText('7aside');
-		} elseif ($playground_details['type'] == 2) {
+			$pg_count = 7;
+		} elseif ($playground_details[0]['type'] == 2) {
 			$pg_type = $this->_oMain->getIconFromText('11aside');
+			$pg_count = 11;
 		}
 		$join_type = '<img class="pgicon" src="'.$join_type.'" alt="">';
 		$playground_type = 	'<img class="pgicon" src="'.$pg_type.'" alt="">';
+		$match_time = $aData['match_time'].":00";
 		if($aData['match_type'] == 0){
-			
+			//$confirmed_player = 0;
 			if($aData['block_booking']==0) {
 				$match_type = 'practice_match';
 			}else{ 
@@ -160,24 +164,27 @@ class BxMatchPageView extends BxDolTwigPageView
 				}
 				
 			$end_date = date('Y-m-d',$aData['end_date']);
-			$match_time = $aData['match_time'].":00";
+			
 			}
+			$confirmed_player = $this->_oDb->getConfirmedPlayersPractice($aData['id']);
+			$pg_count = 2*$pg_count;
 			$match_type_icon = $this->_oMain->getIconFromText($match_type);
 			$match_type_icon = '<img class="pgicon"  src="'.$match_type_icon.'" alt="">';
-			$teams = $match_type_icon ;
+			$teams = $match_type_icon .'<b>('.$confirmed_player.'/'.$pg_count.')</b>';
 			//end date
 		} else {
-			
 			$team_id = $this->_oDb->getMatchTeamId($aData['id']);
 		    $match_team1 = $this->_oDb->getTeamDetails($team_id[0]);
 			$match_team2 = $this->_oDb->getTeamDetails($team_id[1]);
+			$confirmed_player1 = $this->_oDb->getConfirmedPlayersTeam($aData['id'],$team_id[0]);
+			$confirmed_player2 = $this->_oDb->getConfirmedPlayersTeam($aData['id'],$team_id[1]);
 			//echo '<pre>';print_r($team_id);
 			$match_type = 'team_match';
 			$match_type_icon = $this->_oMain->getIconFromText($match_type);
 			$match_type_icon = '<img class="pgicon matchtypem"  src="'.$match_type_icon.'" alt="">';
-			$teams = '['.$match_team1[0]['title'] .'&nbsp;'.$match_type_icon.'&nbsp;'. $match_team2[0]['title'].']';
+			$teams = '['.$match_team1[0]['title'] .'<b>('.$confirmed_player1.'/'.$pg_count.')</b>&nbsp;'.$match_type_icon.'&nbsp;'. $match_team2[0]['title'].'<b>('.$confirmed_player2.'/'.$pg_count.')</b>]';
 			$end_date = '';
-			$match_time = '';
+			//$match_time = '';
 		}
 		$match_type = $this->_oMain->getIconFromText($match_type);
 		if($match_type_additional!='') {
