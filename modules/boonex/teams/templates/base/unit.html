@@ -8,18 +8,18 @@
     <div class="bx-twig-unit-info">
 
         <div class="bx-twig-unit-title bx-def-font-h2">
-            <a href="__team_url__">__team_title__</a>
+           <img class="team-class" src="__team_status__" alt=""> <a href="__team_url__">__team_title__</a>
         </div>
 
         <div class="bx-twig-unit-line bx-twig-unit-desc">__snippet_text__</div>
 
-        <div class="bx-twig-unit-line bx-twig-unit-special">__fans_count__ <bx_text:_bx_teams_fans /></div>
+        <!--div class="bx-twig-unit-line bx-twig-unit-special">__fans_count__ <bx_text:_bx_teams_fans /></div-->
 		
-		<div class="bx-twig-unit-line"><img src="__team_status__" alt="">&nbsp;<img src="__join_type_icon__" alt="">  </div>
+		<div class="bx-twig-unit-line"><img class="team-class" src="__join_type_icon__" alt="">&nbsp;<img class="team-class" src="__player_icon__"  alt="">__fans_count__ &nbsp; __gender__</div><br>
 
-        <div class="bx-twig-unit-line">__country_city__</div>        
+        <!--div class="bx-twig-unit-line">__country_city__</div-->        
 
-        <bx_if:full>
+        <!--bx_if:full>
 
             <div class="bx-twig-unit-line bx-twig-unit-rate">
                 __rate__
@@ -29,7 +29,7 @@
                 __created__ <span class="bullet">&#183;</span> <bx_text:_From /> <a href="__author_url__">__author__</a>
             </div>
 
-        </bx_if:full>
+        </bx_if:full-->
 
     </div>    
 

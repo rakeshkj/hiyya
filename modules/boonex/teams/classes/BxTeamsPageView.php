@@ -124,9 +124,9 @@ class BxTeamsPageView extends BxDolTwigPageView
 		$cat = $this->_oTemplate->parseCategories($aData['categories']);
 		$category = ($cat==0)?'5aside':'11aside';
 		$category = $this->_oMain->getIconFromText($category);
+		$join_type =  ($aData['join_confirmation'] == 0)?'open_icon':'invite_only';
 		$range_in_km = $aData['city'];
 		$team_locations = $aData['zip'];
-		
 		$member_count = $aData['fans_count'];
 		$team_max_capacity = $this->_oDb->getParam('bx_teams_team_max_capacity');
 		$team_min_capacity = $this->_oDb->getParam('bx_teams_team_min_capacity');
@@ -140,7 +140,20 @@ class BxTeamsPageView extends BxDolTwigPageView
 			$team_status = 'status_team_Incomplete';
 		}
 		$team_status = $this->_oMain->getIconFromText($team_status);
-		//echo $team_locations;die;
+		//Gender
+		if($aData['gender']==0) {
+			$gender = 'Male';
+			
+		} elseif($aData['gender']==1) {
+			$gender = 'Female';
+		} elseif($aData['gender']==2) {
+			$gender = '';
+		}
+		if($gender!='') {
+			$gender = $this->_oMain->getIconFromText($gender);
+			$gender = '<img class="team-class" src="'.$gender.'" alt="">';
+		}
+		$player_icon = $this->_oMain->getIconFromText('Player-Icon');
         $aVars = array (
             'author_unit' => get_member_thumbnail($aAuthor['ID'], 'none', true),
             'date' => getLocaleDate($aData['created'], BX_DOL_LOCALE_DATE_SHORT),
@@ -150,6 +163,11 @@ class BxTeamsPageView extends BxDolTwigPageView
             'fields' => $sFields,
             'author_unit' => $GLOBALS['oFunctions']->getMemberThumbnail($aAuthor['ID'], 'none', true),
             'location' => $sLocation,
+			'team-name' => $aData['title'],
+			'gender' => $gender,
+			'player_icon' => $player_icon,
+			'join_type_icon'  => $this->_oMain->getIconFromText($join_type),
+			'fans_cont' => $member_count,
 			'range' => $range_in_km,
 			'team_locations' => $team_locations,
 			'team_status' => $team_status,

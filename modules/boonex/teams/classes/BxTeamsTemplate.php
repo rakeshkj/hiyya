@@ -25,6 +25,7 @@ class BxTeamsTemplate extends BxDolTwigTemplate
     {
 		$team_detail = $this->_oDb->getTeamDetails($aData['id']);
 		$join_type =  ($team_detail[0]['join_confirmation'] == 0)?'open_icon':'invite_only';
+		
         if (null == $this->_oMain)
             $this->_oMain = BxDolModule::getInstance('BxTeamsModule');
 
@@ -37,7 +38,7 @@ class BxTeamsTemplate extends BxDolTwigTemplate
 		$team_status = '';
         if ($aData['thumb']) {
             $a = array ('ID' => $aData['author_id'], 'Avatar' => $aData['thumb']);
-            $aImage = BxDolService::call('photos', 'get_image', array($a, 'browse'), 'Search');
+            $aImage = BxDolService::call('photos', 'get_image', array($a, 'thumb'), 'Search');
             $sImage = $aImage['no_image'] ? '' : $aImage['file'];
         }
 		
@@ -54,7 +55,21 @@ class BxTeamsTemplate extends BxDolTwigTemplate
 			$team_status = 'status_team_Incomplete';
 		}
 		$team_status = $this->_oMain->getIconFromText($team_status);
-		
+		$player_icon = $this->_oMain->getIconFromText('Player-Icon');
+		//Gender
+		if($team_detail[0]['gender']==0) {
+			$gender = 'Male';
+			
+		} elseif($team_detail[0]['gender']==1) {
+			$gender = 'Female';
+		} elseif($team_detail[0]['gender']==2) {
+			$gender = '';
+		}
+		//$gender = $this->_oMain->getIconFromText($gender);
+		if($gender!='') {
+			$gender = $this->_oMain->getIconFromText($gender);
+			$gender = '<img class="team-class" src="'.$gender.'" alt="">';
+		}
 //echo $this->_oMain->getIconFromText('5aside');
         $aVars = array (
             'id' => $aData['id'],
@@ -65,6 +80,8 @@ class BxTeamsTemplate extends BxDolTwigTemplate
 			'team_status'  => $team_status,//$join_type,
             'created' => defineTimeInterval($aData['created']),
             'fans_count' => $aData['fans_count'],
+			'player_icon' => $player_icon,
+			'gender' => $gender,
             'country_city' => $this->_oMain->_formatLocation($aData),
             'snippet_text' => $this->_oMain->_formatSnippetText($aData),
             'bx_if:full' => array (

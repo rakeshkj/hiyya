@@ -52,7 +52,7 @@ class BxTeamsDb extends BxDolTwigModuleDb
 	
 	function getTeamDetails ($id)
     {
-        return $this->getAll ("SELECT join_confirmation FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getAll ("SELECT * FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 
 }

@@ -215,6 +215,20 @@ class BxTeamsFormAdd extends BxDolFormMedia
                     ),
                     'display' => true,
                 ),
+				'gender' => array(
+                    'type' => 'radio_set',
+                    'name' => 'gender',
+                    'caption' => _t('_bx_matches_form_caption_gender'),
+					'values' => array(
+                    0 => _t('_bx_matches_form_caption_male'),
+                    1 => _t('_bx_matches_form_caption_female'),
+					2 => _t('_bx_matches_form_caption_any')
+					),
+                    'required' => true,
+                    'db' => array (
+                        'pass' => 'Int',
+                    ),
+                ),
                 /*'tags' => array(
                     'type' => 'text',
                     'name' => 'tags',
