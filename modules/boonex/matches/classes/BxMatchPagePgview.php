@@ -62,6 +62,57 @@ class BxMatchPagePgview extends BxDolTwigPageView
 		$type = $aData['type'];
 		$pitch_type = $aData['pitch_type'];
 		$indoor_type = $aData['indoor'];
+		
+		$ball_hire = $aData['ballhire'];
+		if($ball_hire==1) {
+		$ball_hire_icon_url = $this->_oMain->getIconFromText('Ball-hire');
+		$ball_hire_icon = '<img src="'.$ball_hire_icon_url.'" alt="">';
+		} else {
+			$ball_hire_icon = '';
+		}
+		$ball_bump = $aData['ballbump'];
+		if($ball_bump==1) {	
+		$ball_bump_icon_url = $this->_oMain->getIconFromText('Ball-pump');
+		$ball_bump_icon = '<img  src="'.$ball_bump_icon_url.'" alt="">';
+		} else {
+			$ball_bump_icon = '';
+		}
+		$netted = $aData['netted'];
+		if($netted==1) {	
+		$netted_icon_url = $this->_oMain->getIconFromText('Netted');
+		$netted_icon = '<img src="'.$netted_icon_url.'" alt="">';
+		} else {
+			$netted_icon = '';
+		}
+		$with_lines = $aData['withlines'];
+		if($with_lines==1) {	
+		$with_lines_url = $this->_oMain->getIconFromText('With');
+		$with_lines_icon = '<img src="'.$with_lines_url.'" alt="">';
+		} else {
+			$with_lines_icon = '';
+		}
+		$shop = $aData['shop'];
+		if($shop==1) {	
+		$shop_url = $this->_oMain->getIconFromText('Shop');
+		$shop_icon = '<img  src="'.$shop_url.'" alt="">';
+		} else {
+			$shop_icon = '';
+		}
+		$wc = $aData['WC'];
+		if($wc==1) {	
+		$wc_url = $this->_oMain->getIconFromText('wc');
+		$wc_icon = '<img src="'.$wc_url.'" alt="">';
+		} else {
+			$wc_icon = '';
+		}
+		$water = $aData['water'];
+		if($water==1) {	
+		$water_url = $this->_oMain->getIconFromText('Water');
+		$water_icon = '<img src="'.$water_url.'" alt="">';
+		} else {
+			$water_icon = '';
+		}
+		
 		if($type ==0 ){
 			$matchtype ='5aside';
 		} elseif($type ==1) {
@@ -96,7 +147,21 @@ class BxMatchPagePgview extends BxDolTwigPageView
 			
 			$indoor ='Indoor';
 		}
-		$indoor = $this->_oMain->getIconFromText($indoor);		
+		$indoor = $this->_oMain->getIconFromText($indoor);	
+		$playground_icon = $this->_oMain->getIconFromText('Playground-Icon');
+		$price_icon = $this->_oMain->getIconFromText('Price-Icon');	
+		if(!empty($aData['price_per_hour'])) {
+			$price_per_hrs = '<img src="'.$price_icon.'" alt=""><b>='.$aData['price_per_hour'].'</b>';
+		} else {
+			$price_per_hrs = '';
+		}
+		if($aData['author_id']==1) {
+			$status_url = $this->_oMain->getIconFromText('Verified');	
+			$status = '<img src="'.$status_url.'" alt="">'; 
+		} else {
+			
+			$status = ''; 
+		}
         $aVars = array (
             'author_unit' => get_member_thumbnail($aAuthor['ID'], 'none', true),
             'date' => getLocaleDate($aData['created'], BX_DOL_LOCALE_DATE_SHORT),
@@ -108,9 +173,19 @@ class BxMatchPagePgview extends BxDolTwigPageView
 			'gps_location' => $aData['gps_location'],
 			'pitch_type' => $pitchtype,
 			'indoor' => $indoor,
-			'price_per_hour' => $aData['price_per_hour'],
+			'price_per_hour' => $price_per_hrs,
             'author_unit' => $GLOBALS['oFunctions']->getMemberThumbnail($aAuthor['ID'], 'none', true),
             'location' => $sLocation,
+			'pg_name' => $aData['title'],
+			'pg_icon' => $playground_icon,
+			'ball_hire' => $ball_hire_icon,
+			'ball_bump' => $ball_bump_icon,
+			'netted' => $netted_icon,
+			'with_lines' => $with_lines_icon,
+			'shop' => $shop_icon,
+			'wc' => $wc_icon,
+			'water' => $water_icon,
+			'status' => $status,
         );
         return $this->_oTemplate->parseHtmlByName('entry_view_block_pg_info', $aVars);
     }
