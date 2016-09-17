@@ -634,8 +634,8 @@ oSpy.iSlideDown = {$this -> _oConfig -> iSpeedToggleDown};
             $aActivites = $this -> oSearch -> getSearchData();
             $sActivites = $this -> _proccesActivites($aActivites);
 
-            $sOutputCode = $this->_oTemplate->getWrapper($this -> sEventsWrapper, $aActivites ? $sActivites : MsgBox(_t('_Empty')));
-
+            $sOutputCode = $this->_oTemplate->getWrapper($this -> sEventsWrapper, $sActivites ? $sActivites : MsgBox(_t('_Empty')));
+			//$sOutputCode = $this->_oTemplate->getWrapper($this -> sEventsWrapper, $aActivites ? $sActivites : MsgBox(_t('_Empty')));
             //-- process pagination URL --//
             $sPaginate = '';
             if($this -> oSearch -> aCurrent['paginate']['totalNum'] > $this -> _oConfig -> iPerPage) {

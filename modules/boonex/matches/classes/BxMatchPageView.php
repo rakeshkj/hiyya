@@ -620,7 +620,7 @@ class BxMatchPageView extends BxDolTwigPageView
 			$sProfileThumbPlayer = array ();
 			$player_response = '';
 			$checkbox = '';
-			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, $aProfile['type'],$aProfile['team_id']);
+			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, 'p',$aProfile['team_id']);
 			//echo '<pre>';print_r($aPlayersProfiles);
 			foreach ($aPlayersProfiles as $aPlayersProfile) {
 				if($this->_oMain->_iProfileId==$aProfile['id_profile']) {
@@ -643,7 +643,7 @@ EOR;
 						}
 
 					   } else {
-						  $player_response =  'strikethrough';//'<img src="'.$image_icon.'" alt="Result not submitted">';    
+						  $player_response =  '<img src="'.$image_icon.'" alt="Result not submitted">'; //'strikethrough';//   
 					   }
 					} 
 					
@@ -669,13 +669,9 @@ EOR;
 						}
 
 					   } else {
-						  $player_response_practice =  'strikethrough';//'<img src="'.$image_icon.'" alt="Result not submitted">';    
+						  $player_response_practice =  '<img src="'.$image_icon.'" alt="Result not submitted">';//'strikethrough';//    
 					   }
 					} 
-			}
-			if($player_response_practice=='' || $player_response=='') {
-				
-				echo "<script>$('.thumb_username').removeClass('strikethrough')</script>";
 			}
 			//end here
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);

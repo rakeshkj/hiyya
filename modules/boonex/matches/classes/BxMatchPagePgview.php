@@ -100,7 +100,7 @@ class BxMatchPagePgview extends BxDolTwigPageView
 		}
 		$wc = $aData['WC'];
 		if($wc==1) {	
-		$wc_url = $this->_oMain->getIconFromText('wc');
+		$wc_url = $this->_oMain->getIconFromText('Toilets');
 		$wc_icon = '<img src="'.$wc_url.'" alt="">';
 		} else {
 			$wc_icon = '';
@@ -138,9 +138,16 @@ class BxMatchPagePgview extends BxDolTwigPageView
 			$pitchtype ='Sand';
 		} elseif ($pitch_type ==4) {
 			
-			$pitchtype ='No-field';
+			$pitchtype ='';
 		}
-		$pitchtype = $this->_oMain->getIconFromText($pitchtype);
+		if($pitchtype!='') {
+			
+		$pitchtype_url = $this->_oMain->getIconFromText($pitchtype);
+		$pitchtype_icon = '<img src="'.$pitchtype_url.'" alt="">';
+		} else {
+			$pitchtype_icon = '';
+		}
+		
 		if($indoor_type ==0 ){
 			$indoor ='Outdoor';
 		} elseif($indoor_type ==1) {
@@ -171,7 +178,7 @@ class BxMatchPagePgview extends BxDolTwigPageView
             'max_player' => $aData['max_players'],
             'address' => $aData['address'],
 			'gps_location' => $aData['gps_location'],
-			'pitch_type' => $pitchtype,
+			'pitch_type' => $pitchtype_icon,
 			'indoor' => $indoor,
 			'price_per_hour' => $price_per_hrs,
             'author_unit' => $GLOBALS['oFunctions']->getMemberThumbnail($aAuthor['ID'], 'none', true),

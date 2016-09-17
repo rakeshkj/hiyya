@@ -437,13 +437,13 @@
 		
 		function getAllInvitationMatch($ownerId) {
 			
-			$sQuery = "SELECT * FROM `bx_matches_fans` WHERE confirmed=0 AND id_profile='".$ownerId."'";
+			$sQuery = "SELECT * FROM `bx_matches_fans` WHERE confirmed=0 AND id_profile='".$ownerId."' ORDER BY `when` DESC";
             return $this -> getAll($sQuery);
 		}
 		
 		function getAllInvitationTeam($ownerId) {
 			
-			$sQuery = "SELECT * FROM `bx_teams_fans` WHERE confirmed=0 AND id_profile='".$ownerId."'";
+			$sQuery = "SELECT * FROM `bx_teams_fans` WHERE confirmed=0 AND id_profile='".$ownerId."' ORDER BY `when` DESC";
             return $this -> getAll($sQuery);
 		}
 		

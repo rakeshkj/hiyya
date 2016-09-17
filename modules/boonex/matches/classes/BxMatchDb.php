@@ -322,6 +322,6 @@ class BxMatchDb extends BxDolTwigModuleDb
 	}
 	function getConfirmedPlayersTeam ($matchId,$teamId) {
 		
-		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchId."' AND team_id ='".$teamId."' AND `confirmed`='1'");	
+		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchId."' AND team_id ='".$teamId."' AND type='p' AND `confirmed`='1'");	
 	}
 }

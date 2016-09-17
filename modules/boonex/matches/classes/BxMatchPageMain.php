@@ -102,7 +102,7 @@ class BxMatchPageMain extends BxDolTwigPageMain
 				}
 				$wc = $aDataEntry['WC'];
 				if($wc==1) {	
-				$wc_url = $this->oMain->getIconFromText('wc');
+				$wc_url = $this->oMain->getIconFromText('Toilets');
 				$wc_icon = '<img src="'.$wc_url.'" alt="">';
 				} else {
 					$wc_icon = '';
@@ -140,9 +140,14 @@ class BxMatchPageMain extends BxDolTwigPageMain
 					$pitchtype ='Sand';
 				} elseif ($pitch_type ==4) {
 					
-					$pitchtype ='No-field';
+					$pitchtype ='';
 				}
-				$pitchtype = $this->oMain->getIconFromText($pitchtype);
+				if($pitchtype!='') {
+				$pitchtype_url = $this->oMain->getIconFromText($pitchtype);
+				$pitchtype_icon = '<img src="'.$pitchtype_url.'" alt="">';
+				} else {
+					$pitchtype_icon = '';
+				}
 				if($indoor_type ==0 ){
 					$indoor ='Outdoor';
 				} elseif($indoor_type ==1) {
@@ -177,7 +182,7 @@ class BxMatchPageMain extends BxDolTwigPageMain
 					'author_url' => getProfileLink($aDataEntry['author_id']),
 					'created' => defineTimeInterval($aDataEntry['created'],true,true),
 					'match_type' => $matchtype,
-					'pitch_type' => $pitchtype,
+					'pitch_type' => $pitchtype_icon,
 					'indoor' => $indoor,
 					'price_per_hour' => $price_per_hrs,
 					'author_unit' => $GLOBALS['oFunctions']->getMemberThumbnail($aAuthor['ID'], 'none', true),
