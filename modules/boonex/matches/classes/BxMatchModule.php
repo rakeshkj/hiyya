@@ -607,6 +607,10 @@ class BxMatchModule extends BxDolTwigModule
     {
         parent::_actionMatchResult ($iEntryId, _t('_bx_matches_page_match_result'));
     }
+	function actionEditMatchResult ($iEntryId)
+    {
+        parent::_actionEditMatchResult ($iEntryId, _t('_bx_matches_page_match_result'));
+    }
     function actionDelete ($iEntryId)
     {
         parent::_actionDelete ($iEntryId, _t('_bx_matches_msg_match_was_deleted'));

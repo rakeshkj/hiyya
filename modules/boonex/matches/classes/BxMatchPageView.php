@@ -71,6 +71,7 @@ class BxMatchPageView extends BxDolTwigPageView
             $isFan = $this->_oDb->isFan((int)$this->aDataEntry['id'], $this->_oMain->_iProfileId, 0) || $this->_oDb->isFan((int)$this->aDataEntry['id'], $this->_oMain->_iProfileId, 1);
 			$match_type = $this->aDataEntry['match_type'];
 			$match_status = $this->_oDb->getMatchStatus($this->aDataEntry);
+			$match_result = $this->_oDb->isMatchResultSubmitted((int)$this->aDataEntry['id']);
             $aInfo = array (
                 'BaseUri' => $this->_oMain->_oConfig->getBaseUri(),
                 'iViewer' => $this->_oMain->_iProfileId,
@@ -82,7 +83,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleEdit' => $this->_oMain->isAllowedEdit($this->aDataEntry) ? _t('_bx_matches_action_title_edit') : '',
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
 				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
-				'TitleSubmit' => ($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : '',
+				($match_result ? 'TitleResultEdit' : 'TitleSubmit') => ($match_result ? (($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_edit_title_submit') : _t('_bx_matches_action_edit_title_submit')) : (($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : _t('_bx_matches_action_title_submit'))),
                 'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
@@ -95,10 +96,14 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleUploadSounds' => $this->_oMain->isAllowedUploadSounds($this->aDataEntry) ? _t('_bx_matches_action_upload_sounds') : '',
                 'TitleUploadFiles' => $this->_oMain->isAllowedUploadFiles($this->aDataEntry) ? _t('_bx_matches_action_upload_files') : '',
             );
-
-            if (!$aInfo['TitleEdit'] && !$aInfo['TitleDelete'] && !$aInfo['TitleJoin'] && !$aInfo['TitleInvite'] && !$aInfo['TitleShare'] && !$aInfo['TitleBroadcast'] && !$aInfo['AddToFeatured'] && !$aInfo['TitleManageFans'] && !$aInfo['TitleUploadPhotos'] && !$aInfo['TitleUploadVideos'] && !$aInfo['TitleUploadSounds'] && !$aInfo['TitleUploadFiles'])
+			if($match_result > 0) {
+				unset($aInfo['TitleSubmit']);
+			} else {
+				unset($aInfo['TitleResultEdit']);
+			}
+            if (!$aInfo['TitleEdit'] && !$aInfo['TitleDelete'] && !$aInfo['TitleJoin'] && !$aInfo['TitleInvite'] && !$aInfo['TitleShare'] && !$aInfo['TitleBroadcast'] && !$aInfo['AddToFeatured'] && !$aInfo['TitleManageFans'] && !$aInfo['TitleUploadPhotos'] && !$aInfo['TitleUploadVideos'] && !$aInfo['TitleUploadSounds'] && !$aInfo['TitleUploadFiles'] && !$aInfo['TitleSubmit'] && !$aInfo['TitleResultEdit'])
                 return '';
-
+			$test = $oFunctions->genObjectsActions($aInfo, 'bx_matches');
             return $oSubscription->getData() . $oFunctions->genObjectsActions($aInfo, 'bx_matches');
         }
 

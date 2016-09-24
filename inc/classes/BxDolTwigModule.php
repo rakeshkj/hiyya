@@ -801,6 +801,74 @@ class BxDolTwigModule extends BxDolModule
         $this->_oTemplate->addCss ('forms_extra.css');
         $this->_oTemplate->pageCode($sTitle);
     }
+	
+	function _actionEditMatchResult ($iEntryId, $sTitle)
+    {
+        $iEntryId = (int)$iEntryId;
+        if (!($aDataEntryMatch = $this->_oDb->getEntryByIdMatchResult($iEntryId))) {
+            $this->_oTemplate->displayPageNotFound ();
+            return;
+        }
+		$aDataEntry = $this->_oDb->getEntryById($iEntryId);
+        if (!$this->isAllowedEdit($aDataEntry)) {
+            $this->_oTemplate->displayAccessDenied ();
+            return;
+        }
+
+        $this->_oTemplate->pageStart();
+
+        bx_import ('ResultFormEdit', $this->_aModule);
+        $sClass = $this->_aModule['class_prefix'] . 'ResultFormEdit';
+        $oForm = new $sClass ($this, $aDataEntry[$this->_oDb->_sFieldAuthorId], $iEntryId, $aDataEntryMatch);
+        if (isset($aDataEntry[$this->_oDb->_sFieldJoinConfirmation]))
+            $aDataEntry[$this->_oDb->_sFieldJoinConfirmation] = (int)$aDataEntry[$this->_oDb->_sFieldJoinConfirmation];
+
+        $oForm->initChecker($aDataEntryMatch);
+
+        if ($oForm->isSubmittedAndValid ()) {
+			
+            if($aDataEntry['match_type']=='1') {
+			$home_team = isset($_POST['home_team_players']) ? implode(',',$_POST['home_team_players']) :'';
+			$away_team = isset($_POST['away_team_players']) ? implode(',',$_POST['away_team_players']) :''; 
+			$time = time(); $date = date('Y-m-d H:i:s',$time);
+            $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => $away_team);
+			$home_player = isset($_POST['home_team_players'])? $_POST['home_team_players'] :array();
+			$away_player = isset($_POST['away_team_players'])? $_POST['away_team_players'] :array();
+			$players_list = array_merge($home_player,$away_player);
+			} else {
+				
+		    $home_team = isset($_POST['players_list_practice']) ? implode(',',$_POST['players_list_practice']) :'';
+			$time = time(); $date = date('Y-m-d H:i:s',$time);
+            $aValsAdd = array ('match_id' => $iEntryId,'date_created' => $date, 'home_team_players' => $home_team, 'away_team_players'  => '');
+			$home_player = isset($_POST['players_list_practice'])? $_POST['players_list_practice'] :array();
+			$players_list = $home_player;
+			}
+			$match_result_id = $this->_oDb->getMatchResultId($iEntryId);
+            if ($oForm->update ($match_result_id, $aValsAdd)) {
+
+                $this->isAllowedEdit($aDataEntry, true); // perform action
+
+                $this->onEventChanged ($iEntryId, 'approved');
+                header ('Location:' . BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'view/' . $aDataEntry[$this->_oDb->_sFieldUri]);
+                exit;
+
+            } else {
+
+                echo MsgBox(_t('_Error Occured'));
+
+            }
+
+        } else {
+
+            echo $oForm->getCode ();
+
+        }
+
+        $this->_oTemplate->addJs ('main.js');
+        $this->_oTemplate->addCss ('main.css');
+        $this->_oTemplate->addCss ('forms_extra.css');
+        $this->_oTemplate->pageCode($sTitle);
+    }
 	//End here
     function _actionDelete ($iEntryId, $sMsgSuccess)
     {

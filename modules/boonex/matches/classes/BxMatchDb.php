@@ -324,4 +324,8 @@ class BxMatchDb extends BxDolTwigModuleDb
 		
 		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchId."' AND team_id ='".$teamId."' AND type='p' AND `confirmed`='1'");	
 	}
+	function isMatchResultSubmitted ($matchId) {
+		
+		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchId."' LIMIT 1" );	
+	}
 }

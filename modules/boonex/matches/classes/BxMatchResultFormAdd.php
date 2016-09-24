@@ -90,7 +90,7 @@ class BxMatchResultFormAdd extends BxDolFormMedia
                     'required' => true,
 					'checker' => array (
                         'func' => 'preg',
-						'params' => array('/^[1-9][1-9]*$/'),
+						'params' => array('/^[0-9][0-9]*$/'),
                         'error' => _t ('_bx_matches_result_form_err_match_home_score'),
                     ),
                     'db' => array (
@@ -104,7 +104,7 @@ class BxMatchResultFormAdd extends BxDolFormMedia
                     'required' => true,
 					'checker' => array (
                         'func' => 'preg',
-						'params' => array('/^[1-9][1-9]*$/'),
+						'params' => array('/^[0-9][0-9]*$/'),
                         'error' => _t ('_bx_matches_result_form_err_match_away_score'),
                     ),
                     'db' => array (

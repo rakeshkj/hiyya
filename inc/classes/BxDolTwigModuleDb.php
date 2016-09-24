@@ -88,6 +88,22 @@ class BxDolTwigModuleDb extends BxDolModuleDb
         //$this->deleteEntryMediaAll ($iId, 'images');
         return true;
     }
+	
+	function getEntryByIdAndOwnerMatchResult ($iId, $iOwner, $isAdmin)
+    {
+        $sWhere = '';
+        if (!$isAdmin)
+            $sWhere = " AND `{$this->_sFieldAuthorId}` = '$iOwner' ";
+        return $this->getRow ("SELECT * FROM `bx_match_result` WHERE `match_id` = $iId $sWhere LIMIT 1");
+    }
+
+    function getEntryByIdMatchResult ($iId)
+    {
+        return $this->getEntryByIdAndOwnerMatchResult ($iId, 0, true);
+    }
+	function getMatchResultId($id) {
+		return $this->getOne ("SELECT * FROM `bx_match_result` WHERE `match_id` = $id LIMIT 1");	
+	}
 	//End Here
     function getEntriesByAuthor($iProfileId)
     {
