@@ -20,7 +20,20 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 		
 		$i = 0;
 		$match_type = $this->_oDb->getMatchDetails($iEntryId);
+		$match_result = $this->_oDb->isMatchResultSubmitted($iEntryId);
+		$users = $this->_oDb->getSubmittedMatchResultUser($iEntryId);
 		if($match_type['match_type'] == '1') {
+		$home_side = explode(',', $users['home_team_players']);
+		$away_side = explode(',', $users['away_team_players']);
+		
+		if($match_result>0)	{
+			$home_side_value = array_values($home_side);
+			$away_side_value = array_values($away_side);
+		} else {
+			$home_side_value = true;
+			$away_side_value = true;
+		}
+		
 		foreach ($aProfiles as $aProfile) {
 			
 			$team_players[] = $this->_oDb->getTeamPlayers($aPlayersProfiles, $iEntryId, true, 'p',$aProfile['team_id']);
@@ -32,6 +45,12 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 			$i++;
 		}
 		} else {
+			$home_side_practice = explode(',', $users['home_team_players']);
+			if($match_result>0)	{
+				$home_side_value_parctice = array_values($home_side_practice);
+			} else {
+				$home_side_value_parctice = true;
+			}
 			foreach ($aProfilesP as $aProfilep) {
 			
 				$sProfileThumbPlayer[$aProfilep['ID']] = get_member_thumbnail( $aProfilep['ID'], 'none', ! $bExtMode, 'visitor' );
@@ -39,6 +58,7 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 		}
 			
 		}
+		
         $aCustomForm = array(
 
             'form_attrs' => array(
@@ -115,25 +135,25 @@ class BxMatchResultFormAdd extends BxDolFormMedia
 					'type' => 'checkbox_set',
 					'name' => 'home_team_players',
 					'caption' => _t('_home_team_players'),
-					'value' => true,
+					'value' => $home_side_value,
 					'values' => $sProfileThumbPlayer['home'],
-					'attrs' => array()
+					
 				),
 				'away_team_players' => array(
 					'type' => 'checkbox_set',
 					'name' => 'away_team_players',
 					'caption' => _t('_away_team_players'),
-					'value' => true,
+					'value' => $away_side_value,
 					'values' => $sProfileThumbPlayer['away'],
-					'attrs' => array()
+					
 				),
                 'players_list_practice' => array(
 					'type' => 'checkbox_set',
 					'name' => 'players_list_practice',
 					'caption' => _t('_players_list'),
-					'value' => true,
+					'value' => $home_side_value_parctice,
 					'values' => $sProfileThumbPlayer,
-					'attrs' => array()
+					
 				),
                 
                 'Submit' => array (

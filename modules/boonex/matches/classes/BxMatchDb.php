@@ -68,7 +68,7 @@ class BxMatchDb extends BxDolTwigModuleDb
     }
 	function getMatchDetails ($id)
     {
-        return $this->getRow ("SELECT match_type,join_confirmation,match_status,start_date,match_time,playground,block_booking,gender,payment FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
+        return $this->getRow ("SELECT * FROM `" . $this->_sPrefix .$this->_sTableMain . "` WHERE  `id` = '" . $id . "'");
     }
 	
 	function getFans(&$aProfiles, $iEntryId, $isConfirmed, $iStart, $iMaxNum, $aFilter = array(), $type='')
@@ -226,7 +226,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 		if($current_time>=$time_after_hour) {
 			$match_status = 'Time Up/Waiting for Results';
 		}
-		if($match_result_played>=1){
+		if($current_time>=$submit_result_duraion && $match_result_played>=1){
 			
 			$match_status = 'Waiting for Result Confirmation';
 		}
@@ -265,6 +265,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function maxApprovalTime($datas) {
 		$current_time = time();
 		$match_max_result_time = $this->getParam('bx_matches_max_approval_time')*60;
+		$max_result_time_match = $this->getParam('bx_matches_max_result_time')*60;
 		$match_type = $datas['match_type'];
 		$match_id = $datas['id'];
 		if($match_type == '0') {
@@ -274,13 +275,23 @@ class BxMatchDb extends BxDolTwigModuleDb
 				$match_max_result_time = $this->getParam('bx_matches_max_approval_time_weekly')*60;
 			} 
 		} 
-		$max_approval_time = $this->matchDuration($match_id)+$match_max_result_time;
+		$max_approval_time = $this->matchDuration($match_id)+$match_max_result_time+$max_result_time_match;
 		if($current_time>$max_approval_time){
 			return false;
 		} else {
 			return true;
 		}	
 		
+	}
+	function matchResultDuration ($matchId) {
+		$current_time = time();
+		$max_result_time_match = $this->getParam('bx_matches_max_result_time')*60;
+		$max_result_time = $this->matchDuration($match_id)+$max_result_time_match;
+		if($current_time>$max_result_time){
+			return true;
+		} else {
+			return false;
+		}	
 	}
 	
 	function getTotalPlayerCount($matchid) {
@@ -327,5 +338,9 @@ class BxMatchDb extends BxDolTwigModuleDb
 	function isMatchResultSubmitted ($matchId) {
 		
 		return $this->getOne ("SELECT count(*) as count FROM `bx_match_result` WHERE match_id='".$matchId."' LIMIT 1" );	
+	}
+	function getSubmittedMatchResultUser ($matchId) {
+		
+		return $this->getRow ("SELECT * FROM `bx_match_result` WHERE match_id='".$matchId."'" );	
 	}
 }

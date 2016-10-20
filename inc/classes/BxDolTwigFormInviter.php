@@ -42,7 +42,7 @@ class BxDolTwigFormInviter extends BxTemplFormView
 				}
 			}    
 			$user_check  = $oMain->_oDb->checkUserMatch($aDataEntry['id'],$r['ID'],0,0);
-			if(!empty($user_check) && $match_eligibility_player==0)
+			if(!empty($user_check) || $match_eligibility_player==0)
 				continue;
 			if($aDataEntry){
 				$userInfo = getProfileInfo($r['ID']);
@@ -102,7 +102,7 @@ class BxDolTwigFormInviter extends BxTemplFormView
 					}
 				}
 			}    
-			if(!empty($user_check) && $match_eligibility_team==0)
+			if(!empty($user_check) || $match_eligibility_team==0)
 				continue;
 			if($val['fans_count'] <= $team_max_capacity && $val['fans_count']>=$pgdetails[0]['min_players'] && $val['fans_count']>=$team_min_capacity) {
 				$aTeams[] = array (

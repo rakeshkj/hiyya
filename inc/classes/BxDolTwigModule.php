@@ -756,6 +756,10 @@ class BxDolTwigModule extends BxDolModule
             $this->_oTemplate->displayPageNotFound ();
             return;
         }
+		if (!$this->isAllowedEdit($aDataEntry)) {
+            $this->_oTemplate->displayAccessDenied ();
+            return;
+        }
         $this->_oTemplate->pageStart();
 
         bx_import ('ResultFormAdd', $this->_aModule);
@@ -816,12 +820,15 @@ class BxDolTwigModule extends BxDolModule
         }
 
         $this->_oTemplate->pageStart();
-
+		if($aDataEntry['match_type']=='1'){
+		$aDataEntryMatch['home_team_players'] = explode(',',$aDataEntryMatch['home_team_players']);
+		$aDataEntryMatch['away_team_players'] = explode(',',$aDataEntryMatch['away_team_players']);
+		} else {
+			$aDataEntryMatch['home_team_players'] = explode(',',$aDataEntryMatch['home_team_players']);
+		}
         bx_import ('ResultFormEdit', $this->_aModule);
         $sClass = $this->_aModule['class_prefix'] . 'ResultFormEdit';
         $oForm = new $sClass ($this, $aDataEntry[$this->_oDb->_sFieldAuthorId], $iEntryId, $aDataEntryMatch);
-        if (isset($aDataEntry[$this->_oDb->_sFieldJoinConfirmation]))
-            $aDataEntry[$this->_oDb->_sFieldJoinConfirmation] = (int)$aDataEntry[$this->_oDb->_sFieldJoinConfirmation];
 
         $oForm->initChecker($aDataEntryMatch);
 
@@ -845,7 +852,7 @@ class BxDolTwigModule extends BxDolModule
 			}
 			$match_result_id = $this->_oDb->getMatchResultId($iEntryId);
             if ($oForm->update ($match_result_id, $aValsAdd)) {
-
+				$this->_oDb->matchPlayerScoreApproval($iEntryId,$players_list);
                 $this->isAllowedEdit($aDataEntry, true); // perform action
 
                 $this->onEventChanged ($iEntryId, 'approved');

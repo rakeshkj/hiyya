@@ -39,6 +39,8 @@ $('#matchtype').change(function () {
         });
 		
 $('#starttime').change(function () {
+	        var current_date_server = $('#current_time').val();
+			var today = new Date(current_date_server);
 			var hr = today.getHours();
 			var startTime = $('#starttime').val();
 			var startDt = $('#startdate').val();

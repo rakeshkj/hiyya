@@ -83,8 +83,9 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleEdit' => $this->_oMain->isAllowedEdit($this->aDataEntry) ? _t('_bx_matches_action_title_edit') : '',
                 'TitleDelete' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_delete') : '',
 				'TitleCancel' => $this->_oMain->isAllowedDelete($this->aDataEntry) ? _t('_bx_matches_action_title_cancel') : '',
-				($match_result ? 'TitleResultEdit' : 'TitleSubmit') => ($match_result ? (($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_edit_title_submit') : _t('_bx_matches_action_edit_title_submit')) : (($this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : _t('_bx_matches_action_title_submit'))),
                 'TitleJoin' => $this->_oMain->isAllowedJoin($this->aDataEntry) ? ($isFan ? _t('_bx_matches_action_title_leave') : _t('_bx_matches_action_title_join')) : '',
+				'TitleResultEdit' => ($match_result>0 && $this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_edit_title_submit') : '',
+				'TitleSubmit' => ($match_result<=0 && $this->_oMain->isAllowedDelete($this->aDataEntry) && $match_status == 'Time Up/Waiting for Results') ? _t('_bx_matches_action_title_submit') : '',
                 'IconJoin' => $isFan ? 'signout' : 'signin',
                 'TitleInvite' => $this->_oMain->isAllowedSendInvitation($this->aDataEntry) ? _t('_bx_matches_action_title_invite') : '',
                 'TitleShare' => $this->_oMain->isAllowedShare($this->aDataEntry) ? _t('_bx_matches_action_title_share') : '',
@@ -96,14 +97,9 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleUploadSounds' => $this->_oMain->isAllowedUploadSounds($this->aDataEntry) ? _t('_bx_matches_action_upload_sounds') : '',
                 'TitleUploadFiles' => $this->_oMain->isAllowedUploadFiles($this->aDataEntry) ? _t('_bx_matches_action_upload_files') : '',
             );
-			if($match_result > 0) {
-				unset($aInfo['TitleSubmit']);
-			} else {
-				unset($aInfo['TitleResultEdit']);
-			}
+			//echo '<pre>';print_r($aInfo);
             if (!$aInfo['TitleEdit'] && !$aInfo['TitleDelete'] && !$aInfo['TitleJoin'] && !$aInfo['TitleInvite'] && !$aInfo['TitleShare'] && !$aInfo['TitleBroadcast'] && !$aInfo['AddToFeatured'] && !$aInfo['TitleManageFans'] && !$aInfo['TitleUploadPhotos'] && !$aInfo['TitleUploadVideos'] && !$aInfo['TitleUploadSounds'] && !$aInfo['TitleUploadFiles'] && !$aInfo['TitleSubmit'] && !$aInfo['TitleResultEdit'])
                 return '';
-			$test = $oFunctions->genObjectsActions($aInfo, 'bx_matches');
             return $oSubscription->getData() . $oFunctions->genObjectsActions($aInfo, 'bx_matches');
         }
 
@@ -598,7 +594,7 @@ class BxMatchPageView extends BxDolTwigPageView
 		}
 		
 		if(!empty($team_result)){ //&& $match_status == 'Waiting for Result Confirmation'
-		    if($aDataEntry['match_type'] == '1') {
+		    if($this->aDataEntry['match_type'] == '1') {
 				$home_players = $team_result['home_team_players'];
 				$away_players = $team_result['away_team_players'];
 				
@@ -606,11 +602,11 @@ class BxMatchPageView extends BxDolTwigPageView
 				
 					$away_players_array = explode(',', $away_players);
 								
-				if(isset($home_players_array) && isset($away_players_array)) {
+				if(!empty($home_players_array) && !empty($away_players_array)) {
 				$players = array_merge($home_players_array,$away_players_array);
-				} elseif(isset($home_players_array)) {
+				} elseif(!empty($home_players_array)) {
 					$players = $home_players_array;
-				} elseif(isset($away_players_array)) { 
+				} else { 
 					$players = $away_players_array;
 				}
 			} else {
@@ -620,9 +616,11 @@ class BxMatchPageView extends BxDolTwigPageView
 				$players = $home_players_array;
 			}
 		}
-		//echo '<pre>';print_r($aProfiles);
+		
         foreach($aProfiles as $aProfile) {
 			$sProfileThumbPlayer = array ();
+			$player_response_practice_not_submitted = '';
+			$player_response_not_submitted = '';
 			$player_response = '';
 			$checkbox = '';
 			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, 'p',$aProfile['team_id']);
@@ -634,25 +632,24 @@ class BxMatchPageView extends BxDolTwigPageView
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
 			}
 			       if(!empty($players)) {      
-				   //$this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId])
-					   if(in_array($aPlayersProfile['id_profile'], $players)) {
-						if($this->_oDb->maxApprovalTime($this->aDataEntry) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {  
-						   
+						if($this->_oDb->matchResultDuration($this->aDataEntry) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {  
+						   if($this->_oDb->maxApprovalTime($this->aDataEntry)) {  
 $player_response = <<<EOR
 
 <button onclick="getHtmlData('sys_manage_items_player_response_content', '{$match_uri}?ajax_action=reject_score&amp;ids={$aProfile['id_profile']}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
 
 EOR;
+						   }
 						} else {
 							$player_response = "";
 						}
 
-					   } else {
-						  $player_response =  '<img src="'.$image_icon.'" alt="Result not submitted">'; //'strikethrough';//   
+					   if(!in_array($aPlayersProfile['id_profile'], $players)) {
+						  $player_response_not_submitted =  '<img src="'.$image_icon.'" alt="Result not submitted">'; //'strikethrough';//   
 					   }
 					} 
 					
-				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response);
+				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response_not_submitted);
 				
 				//$sProfileThumbPlayerPractice[] = array ('player_response' => $player_response);
 			}
@@ -660,21 +657,21 @@ EOR;
 			if($this->aDataEntry['match_type'] == 0){ 
 			
 				if(!empty($players)) {      
-				   //$this->_oDb->maxApprovalTime($this->aDataEntry[$this->_oDb->_sFieldId])
-					   if(in_array($aProfile['id_profile'], $players)) {
-						if($this->_oDb->maxApprovalTime($this->aDataEntry) && $aProfile['id_profile'] == $this->_oMain->_iProfileId) {  
-						   
+					   
+						if($this->_oDb->matchResultDuration($this->aDataEntry) && $aProfile['id_profile'] == $this->_oMain->_iProfileId) {  
+						  if($this->_oDb->maxApprovalTime($this->aDataEntry)) {  
 $player_response_practice = <<<EOR
 
 <button onclick="getHtmlData('sys_manage_items_player_response_content', '{$match_uri}?ajax_action=reject_score&amp;ids={$aProfile['id_profile']}', false, 'post',true); return false;" name="fans_reject" value="Reject" type="submit">Reject</button>
 
 EOR;
+						  }
 						} else {
 							$player_response_practice = " ";
 						}
 
-					   } else {
-						  $player_response_practice =  '<img src="'.$image_icon.'" alt="Result not submitted">';//'strikethrough';//    
+					   if(!in_array($aProfile['id_profile'], $players)) {
+						  $player_response_practice_not_submitted =  '<img src="'.$image_icon.'" alt="Result not submitted">';//'strikethrough';//    
 					   }
 					} 
 			}
@@ -715,18 +712,22 @@ EOR;
 					)
                 ),
 				'bx_if:pmatch' => array (
-                    'condition' => !empty($player_response_practice),
+                    'condition' => !empty($player_response_practice_not_submitted),
                     'content' => array (
-						'player_response_practice'=> $player_response_practice
+						'player_response_practice'=> $player_response_practice_not_submitted
 					)
                 ),
+                    
+						'player_response_practice_confirmation'=> $player_response_practice,
+					
+                
             );
 			if($this->aDataEntry['match_type'] == 1){ 
 				if($i==0) {
-				$sResult .= '<div><b>Home</b>  <div>' .$home_score.'</div></div>';
+				$sResult .= '<div><b>Home</b>  <div>' .$home_score.'</div> ' .$player_response. '</div>';
 				} elseif($i==1) {
 					
-					$sResult .= '<div><b>Away</b>   <div>'.   $away_score.'</div></div>';
+					$sResult .= '<div><b>Away</b>   <div>'.   $away_score.  '</div>'.  $player_response  .'</div>';
 				} 
 				$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
 			} else {

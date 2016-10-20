@@ -163,7 +163,7 @@ class BxMatchFormAdd extends BxDolFormMedia
 					}
 				}
 			}    
-			if(!empty($user_check) && $match_eligibility_team==0)
+			if(!empty($user_check) || $match_eligibility_team==0)
 				continue;
 			if($team_player_count[0]['player_count'] <= $team_max_capacity && $team_player_count[0]['player_count']>=$pgdetails[0]['min_players'] && $team_player_count[0]['player_count']>=$team_min_capacity) {
 				//$aTeams[$val['id']] = '<a target="_blank" href="m/teams/view/'.$val['uri'].'">'.$val['title'].'</a>';
@@ -302,24 +302,15 @@ class BxMatchFormAdd extends BxDolFormMedia
                         'pass' => 'Int',
                     ),
                 ),
-				/*'match_time' => array (
-                    'type' => 'select',
-                    'name' => 'match_time',
+				'current_time' => array (
+                    'type' => 'hidden',
+                    'name' => 'current_time',
                     'caption' => _t('_bx_matches_menu_match_time'),
-					'required' => true,
-					
-                    'values' => array(
-                        0 => _t('_1hr'),
-                        1 => _t('_2hr'),
-                    ),
-                    'checker' => array (
-                        'func' => 'int',
-                        'error' => _t ('_bx_matches_form_err_match_time'),
-                    ),
-                    'db' => array (
-                        'pass' => 'Int',
-                    ),
-                ),*/
+                    'value' => date('Y-m-d H:i:s'),
+					'attrs' =>array (
+					'id' => 'current_time',
+					),
+                ),
 				'start_date' => array (
                     'type' => 'date',
                     'name' => 'start_date',

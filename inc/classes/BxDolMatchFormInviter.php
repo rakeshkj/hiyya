@@ -49,7 +49,7 @@ class BxDolMatchFormInviter extends BxTemplFormView
 					$mGender = 'any';
 				}
 				
-			if(!empty($user_check) && $match_eligibility_player==0)
+			if(!empty($user_check) || $match_eligibility_player==0)
 				continue;
 			if(($userAge < $match_person_age) && ($mGender == $userGender || $mGender == 'any')) {
             $aVisitors[] = array (
