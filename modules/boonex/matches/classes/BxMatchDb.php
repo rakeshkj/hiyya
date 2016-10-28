@@ -187,9 +187,11 @@ class BxMatchDb extends BxDolTwigModuleDb
 				}
 				$this->query("UPDATE `bx_matches_main` SET `start_date` = '".$start_date."', `block_booking_repeat` = '1' WHERE `id` = " . (int)$iEntryId);
 				//Reset match players and match result
+				if($start_date!='1970-01-01') {
 				$this->query("DELETE FROM `bx_matches_fans` WHERE `id_entry` = " . (int)$iEntryId);
 				$this->query("DELETE FROM `bx_match_approval_players` WHERE `match_id` = " . (int)$iEntryId);
 				$this->permanentTeamInvitation($aData);
+				}
 			}
 		}
 		

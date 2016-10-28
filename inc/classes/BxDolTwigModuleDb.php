@@ -488,7 +488,7 @@ class BxDolTwigModuleDb extends BxDolModuleDb
     }
 	
 	function checkUserMatch($entryid, $userid, $teamId,$type) {
-		return $this->getOne ("SELECT `id_profile` FROM `bx_matches_fans` WHERE `id_entry` = '$entryid' AND `id_profile` = '$userid' AND team_id='$teamId' AND type='$type' LIMIT 1");
+		return $this->getOne ("SELECT `id_profile` FROM `bx_matches_fans` WHERE `id_entry` = '$entryid' AND `id_profile` = '$userid' AND type='$type' LIMIT 1");//team_id='$teamId' AND
 	}
 	
 	
