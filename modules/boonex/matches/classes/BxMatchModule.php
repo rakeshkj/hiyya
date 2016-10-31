@@ -755,6 +755,14 @@ class BxMatchModule extends BxDolTwigModule
      * Homepage block with different matches
      * @return html to display on homepage in a block
      */
+	 function actionPg (){
+		bx_import ('PageMain', $this->_aModule);
+        $o = new BxMatchPageMain ($this);
+		$this->_oTemplate->pageStart();
+		$o->getBlockCode_PlaygroundListByUser();	
+		$this->_oTemplate->addCss (array('unit.css', 'main.css', 'twig.css'));
+        $this->_oTemplate->pageCode($sTitle, true, true);
+	 }
     function serviceHomepageBlock ()
     {
         if (!$this->_oDb->isAnyPublicContent())

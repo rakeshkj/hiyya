@@ -170,7 +170,12 @@ class BxBaseFunctions
         }
 
         $sKeyValue = trim($sKeyValue, '{}');
-
+		
+		$url = $_SERVER['REQUEST_URI'];
+		$pg_url = explode('/',$url);
+		if(in_array('pg', $pg_url)) {
+			$aRow['Url'] = 'm/matches/browse/my&bx_matches_filter=add_playground';
+		}
         if ( array_key_exists($sKeyValue, $this -> aSpecialKeys) ) {
             return $aRow['Eval'];
         } else {

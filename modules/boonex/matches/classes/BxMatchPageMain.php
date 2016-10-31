@@ -203,7 +203,7 @@ class BxMatchPageMain extends BxDolTwigPageMain
         $aVars = array (
             'bx_repeat:playground' => $playgroundDetails
         );
-        return $this->oTemplate->parseHtmlByName('palygroundlist', $aVars);
+        echo $this->oTemplate->parseHtmlByName('palygroundlist', $aVars);
     }
     function getBlockCode_Recent()
     {

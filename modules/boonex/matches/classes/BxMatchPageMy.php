@@ -112,7 +112,7 @@ class BxMatchPageMy extends BxDolPageView
             return MsgBox(_t('_Access denied'));
         }
         ob_start();
-        $this->_addPlaygroundForm(BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'browse/my');
+        $this->_addPlaygroundForm(BX_DOL_URL_ROOT . $this->_oConfig->getBaseUri() . 'pg');
         $aVars = array ('form' => ob_get_clean(), 'id' => '');
         $this->_oTemplate->addCss ('forms_extra.css');
         return $this->_oTemplate->parseHtmlByName('my_pg_create_pg', $aVars);

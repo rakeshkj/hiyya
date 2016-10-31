@@ -59,7 +59,7 @@ class BxMatchDb extends BxDolTwigModuleDb
 	
 	function getPalgroundListByUser ()
     {
-        return $this->getAll ("SELECT * FROM `" . $this->_sPrefix . 'pg_'.$this->_sTableMain . "` WHERE `author_id` = '" . $_COOKIE['memberID'] . "' || `author_id` = 1 ORDER BY `{$this->_sFieldCreated}`");
+        return $this->getAll ("SELECT * FROM `" . $this->_sPrefix . 'pg_'.$this->_sTableMain . "` WHERE `author_id` = '" . $_COOKIE['memberID'] . "' || `author_id` = 1 ORDER BY `created` DESC");
     }
 	
 	function getPalgroundDetails ($id)
@@ -90,7 +90,8 @@ class BxMatchDb extends BxDolTwigModuleDb
 			$where = "AND `f`.`team_id` = '$team_id'";
 		}
 		
-        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = $isConfirmed AND `f`.`type` = '$type' $where  AND `p`.`Status` = 'Active') GROUP BY `f`.`id_profile` ORDER BY  `f`.`when` DESC ");
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`type` = '$type' $where  AND `p`.`Status` = 'Active') GROUP BY `f`.`id_profile` ORDER BY `f`.`confirmed` DESC");
+		//AND `f`.`confirmed` = $isConfirmed
         return $this->getOne("SELECT FOUND_ROWS()");
     }
 	
@@ -102,7 +103,8 @@ class BxMatchDb extends BxDolTwigModuleDb
             $s = implode (' OR `f`.`id_profile` = ', $aFilter);
             $sFilter = ' AND (`f`.`id_profile` = ' . $s . ') ';
         }
-        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`confirmed` = '$isConfirmed' AND `f`.`type` = '$type' AND `p`.`Status` = 'Active' $sFilter) GROUP BY `f`.`id_profile` ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
+        $aProfiles = $this->getAll ("SELECT SQL_CALC_FOUND_ROWS `p`.*,`f`.* FROM `Profiles` AS `p` INNER JOIN `" . $this->_sPrefix . $this->_sTableFans . "` AS `f` ON (`f`.`id_entry` = '$iEntryId' AND `f`.`id_profile` = `p`.`ID` AND `f`.`type` = '$type' AND `p`.`Status` = 'Active' $sFilter) GROUP BY `f`.`id_profile` ORDER BY `f`.`when` DESC LIMIT $iStart, $iMaxNum");
+		//AND `f`.`confirmed` = '$isConfirmed' 
         return $this->getOne("SELECT FOUND_ROWS()");
     }
 	

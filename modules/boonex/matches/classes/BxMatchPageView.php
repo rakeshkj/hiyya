@@ -632,7 +632,7 @@ class BxMatchPageView extends BxDolTwigPageView
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
 			}
 			       if(!empty($players)) {      
-						if($this->_oDb->matchResultDuration($this->aDataEntry) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId) {  
+						if($this->_oDb->matchResultDuration($this->aDataEntry) && $aPlayersProfile['id_profile'] == $this->_oMain->_iProfileId && $aPlayersProfile['confirmed']==1) {  
 						   if($this->_oDb->maxApprovalTime($this->aDataEntry)) {  
 $player_response = <<<EOR
 
@@ -644,7 +644,7 @@ EOR;
 							$player_response = "";
 						}
 
-					   if(!in_array($aPlayersProfile['id_profile'], $players)) {
+					   if(!in_array($aPlayersProfile['id_profile'], $players) && $aPlayersProfile['confirmed']==1) {
 						  $player_response_not_submitted =  '<img src="'.$image_icon.'" alt="Result not submitted">'; //'strikethrough';//   
 					   }
 					} 
