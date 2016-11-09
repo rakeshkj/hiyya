@@ -51,13 +51,117 @@
 	margin-top:-3px;
 }
 
-.strikethrough{
-  text-decoration:line-through;
-}
 .pgicon{
   margin-bottom:-14px;
 }
 .matchtypem {
 	margin-left:2px;
 	margin-right:5px;
+}
+
+.teamName0 {
+	margin-left:74px;
+	font-size:23px;
+	margin-bottom: -160px;
+	
+}
+
+.teamName1{
+	margin-bottom: -53px;
+    margin-left: -90px;
+	font-size:23px;
+	
+}
+.teamscore1{
+
+ margin-left:-364px;
+ font-size:23px;
+ 
+}
+.teamscore0{
+
+ margin-left:397px;
+ font-size:23px;
+}
+
+.status1{
+
+ display:none;	
+}
+.status0{
+
+ margin-left:430px;	
+}
+.searchrow_block_simple0 .thumb_username
+{
+	margin-top: 25px;
+}
+
+.searchrow_block_simple1 .thumb_username
+{
+	margin-top: 25px;
+	margin-left: -135px;
+}
+
+.searchrow_block_simple0
+{
+	float:left;
+	margin-left: 65px;
+	
+}
+.searchrow_block_simple1
+{
+	float: right;
+	margin-right: -90px;
+	
+}
+.player {
+	
+}
+
+.strikethrough .thumb_username 
+{
+	
+  text-decoration:line-through;
+}
+.player .playerPosition
+{
+  
+  font-size:25px;   
+}
+.unconfirmed  a{
+  color:grey;
+}
+
+.teamimage1 {
+	
+	float: right;
+	margin-right:174px;
+	margin-top: -45px;
+}
+.teamimage0 {
+	margin-left:-73px;
+	margin-top: -39px;
+}
+.teamadmin {
+	
+	font-size:15px;   
+}
+.checkboxteam1 {
+	margin-left:-27px;
+}
+.checkboxteam0 {
+	margin-right:-15px;
+}
+.playercheckbox {
+	background-color: #ffffff;
+    border-radius: 3px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.9);
+    height: auto;
+    position: absolute;
+    width: auto;
+    z-index: 2;
+}
+.searchrow_block_simple0 .playersection {
+	margin-bottom:40px;
 }

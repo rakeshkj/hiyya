@@ -67,7 +67,8 @@ class BxMatchPageView extends BxDolTwigPageView
 
             $oSubscription = new BxDolSubscription();
             $aSubscribeButton = $oSubscription->getButton($this->_oMain->_iProfileId, 'bx_matches', '', (int)$this->aDataEntry['id']);
-
+			$team_id = $this->_oDb->getMatchOwnerId($this->aDataEntry['id']);
+			//echo '<pre>';print_r($team_id);
             $isFan = $this->_oDb->isFan((int)$this->aDataEntry['id'], $this->_oMain->_iProfileId, 0) || $this->_oDb->isFan((int)$this->aDataEntry['id'], $this->_oMain->_iProfileId, 1);
 			$match_type = $this->aDataEntry['match_type'];
 			$match_status = $this->_oDb->getMatchStatus($this->aDataEntry);
@@ -76,6 +77,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'BaseUri' => $this->_oMain->_oConfig->getBaseUri(),
                 'iViewer' => $this->_oMain->_iProfileId,
                 'ownerID' => (int)$this->aDataEntry['author_id'],
+				'inviterID' => (in_array($this->_oMain->_iProfileId, $team_id)) ? $this->_oMain->_iProfileId : '',
                 'ID' => (int)$this->aDataEntry['id'],
                 'URI' => $this->aDataEntry['uri'],
                 'ScriptSubscribe' => $aSubscribeButton['script'],
@@ -96,6 +98,7 @@ class BxMatchPageView extends BxDolTwigPageView
                 'TitleUploadVideos' => $this->_oMain->isAllowedUploadVideos($this->aDataEntry) ? _t('_bx_matches_action_upload_videos') : '',
                 'TitleUploadSounds' => $this->_oMain->isAllowedUploadSounds($this->aDataEntry) ? _t('_bx_matches_action_upload_sounds') : '',
                 'TitleUploadFiles' => $this->_oMain->isAllowedUploadFiles($this->aDataEntry) ? _t('_bx_matches_action_upload_files') : '',
+				'TitleInvitePlayer' => (in_array($this->_oMain->_iProfileId, $team_id) && $match_type==1) ? 'InviteTeam' : '',
             );
 			//echo '<pre>';print_r($aInfo);
             if (!$aInfo['TitleEdit'] && !$aInfo['TitleDelete'] && !$aInfo['TitleJoin'] && !$aInfo['TitleInvite'] && !$aInfo['TitleShare'] && !$aInfo['TitleBroadcast'] && !$aInfo['AddToFeatured'] && !$aInfo['TitleManageFans'] && !$aInfo['TitleUploadPhotos'] && !$aInfo['TitleUploadVideos'] && !$aInfo['TitleUploadSounds'] && !$aInfo['TitleUploadFiles'] && !$aInfo['TitleSubmit'] && !$aInfo['TitleResultEdit'])
@@ -198,25 +201,7 @@ class BxMatchPageView extends BxDolTwigPageView
 		$pg_block_booking  = $aData['block_booking'];
 		$gender_type = $aData['gender'];
 		$match_status = $this->_oDb->getMatchStatus($aData);
-		if($match_status == 'Waiting for players') {
-			$match_status_icon = 'Waiting';
-		} elseif($match_status == 'Scheduled') {
-			$match_status_icon = 'status_match_scheduled';
-		} elseif($match_status == 'Cancelled') {
-			$match_status_icon = 'Status_Cancelled';
-		} elseif($match_status == 'Kick off') {
-			$match_status_icon = 'status_match_Kickoff';
-		} elseif($match_status == 'Time Up/Waiting for Results') {
-			$match_status_icon = 'status_match_Timeup';
-		} elseif($match_status == 'Waiting for Result Confirmation') {
-			$match_status_icon = 'status_waitingConfirmation';
-		} elseif($match_status == 'No Match Result') {
-			$match_status_icon = 'no_match_result';
-		} elseif($match_status == 'Played') {
-			$match_status_icon = 'status_match_Played';
-		}
-		
-		$match_status_icon = $this->_oMain->getIconFromText($match_status_icon);
+		$match_status_icon = $this->getMatchStatusIcon($match_status);
 		
 		if($pg_type ==0 ){
 			$playground ='Grass';
@@ -585,14 +570,15 @@ class BxMatchPageView extends BxDolTwigPageView
 		$away_score = '';
 		$team_result = $this->_oDb->teamResult($this->aDataEntry[$this->_oDb->_sFieldId]);
 		$match_status = $this->_oDb->getMatchStatus($this->aDataEntry);
+		$match_status_icon = $this->getMatchStatusIcon($match_status);
 		$match_uri = 'm/matches/view/'.$this->aDataEntry['uri'];
 		$image_icon = 'templates/base/images/icons/delete.png';
 		if($team_result['home_team_score'] && $team_result['away_team_score']){
 			
-			$home_score = 'Score  '. $team_result['home_team_score'];
-			$away_score = 'Score  '. $team_result['away_team_score'];
+			$home_score = $team_result['home_team_score'];
+			$away_score = $team_result['away_team_score'];
 		}
-		
+		//echo '<pre>';print_r($sImage);
 		if(!empty($team_result)){ //&& $match_status == 'Waiting for Result Confirmation'
 		    if($this->aDataEntry['match_type'] == '1') {
 				$home_players = $team_result['home_team_players'];
@@ -616,19 +602,35 @@ class BxMatchPageView extends BxDolTwigPageView
 				$players = $home_players_array;
 			}
 		}
-		
+		//echo '<pre>';print_r($aProfiles);
         foreach($aProfiles as $aProfile) {
+			$additional_char = ($home_score) ? '&nbsp;&nbsp;&nbsp;-' : '';
+			if($i==0) {
+				$aProfile['score'] = $home_score.$additional_char;
+				
+			} else {
+				
+				$aProfile['score'] = $away_score;
+			}
+			
+			$team_image = $this->getTeamImage($aProfile['team_id']);
+			$team_image_url = ($team_image=='') ? 'modules/boonex/teams/templates/base/images/no-image-thumb1.png' : $team_image;
+			
+			$classname = ($aProfile['confirmed'] == 0) ? 'unconfirmed' : '';
 			$sProfileThumbPlayer = array ();
-			$player_response_practice_not_submitted = '';
-			$player_response_not_submitted = '';
+			
+			
 			$player_response = '';
 			$checkbox = '';
 			$iNum = $this->_oDb->getTeamPlayers($aPlayersProfiles, $this->aDataEntry[$this->_oDb->_sFieldId], 1, 'p',$aProfile['team_id']);
 			//echo '<pre>';print_r($aPlayersProfiles);
 			foreach ($aPlayersProfiles as $aPlayersProfile) {
+				$player_response_not_submitted = '';
+				$player_response_practice_not_submitted = '';
+				$class = ($aPlayersProfile['confirmed']==0) ? 'unconfirmed':'';
 				if($this->_oMain->_iProfileId==$aProfile['id_profile']) {
 					
-					$checkbox = '<div class="bx_sys_unit_checkbox bx-def-round-corners">
+					$checkbox = '<div class="bx-def-round-corners playercheckbox">
             <input type="checkbox" name="sys_players_unit[]" value="'.$aPlayersProfile['team_id'].'-'.$aPlayersProfile['id_profile'].'" /></div>';
 			}
 			       if(!empty($players)) {      
@@ -644,18 +646,18 @@ EOR;
 							$player_response = "";
 						}
 
-					   if(!in_array($aPlayersProfile['id_profile'], $players) && $aPlayersProfile['confirmed']==1) {
-						  $player_response_not_submitted =  '<img src="'.$image_icon.'" alt="Result not submitted">'; //'strikethrough';//   
+					   if((!in_array($aPlayersProfile['id_profile'], $players)) && ($aPlayersProfile['confirmed']==1)) {
+						  $player_response_not_submitted =  'strikethrough';//'<img src="'.$image_icon.'" alt="Result not submitted">'; //'';//   
 					   }
 					} 
 					
-				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response_not_submitted);
+				$sProfileThumbPlayer[] = array ( 'thumbplayer' => get_member_thumbnail( $aPlayersProfile['ID'], 'none', ! $bExtMode, 'visitor' ), 'input_check_player' => $checkbox, 'player_response' => $player_response_not_submitted, 'class' => $class);
 				
 				//$sProfileThumbPlayerPractice[] = array ('player_response' => $player_response);
 			}
 			//practice match response
 			if($this->aDataEntry['match_type'] == 0){ 
-			
+			$class_unconfirmed = ($aPlayersProfile['confirmed']==0) ? 'unconfirmed':'';
 				if(!empty($players)) {      
 					   
 						if($this->_oDb->matchResultDuration($this->aDataEntry) && $aProfile['id_profile'] == $this->_oMain->_iProfileId) {  
@@ -670,21 +672,31 @@ EOR;
 							$player_response_practice = " ";
 						}
 
-					   if(!in_array($aProfile['id_profile'], $players)) {
-						  $player_response_practice_not_submitted =  '<img src="'.$image_icon.'" alt="Result not submitted">';//'strikethrough';//    
+					   if((!in_array($aProfile['id_profile'], $players)) && ($aPlayersProfile['confirmed']==1)) {
+						  $player_response_practice_not_submitted =  'strikethrough';//'<img src="'.$image_icon.'" alt="Result not submitted">';//'strikethrough';//    
 					   }
 					} 
 			}
 			//end here
 			$team_details = $this->_oDb->getTeamDetails($aProfile['team_id']);
+			$aAuthor = getProfileInfo($aProfile['ID']);
             $aVars = array(
                 'id' => $aProfile['ID'],
                 'thumb' => get_member_thumbnail($aProfile['ID'], 'none', true),
+				'team_admin' => $aAuthor['NickName'],//get_member_thumbnail($aProfile['ID'], 'none', true),
+				'team_admin_link' => "/".$aAuthor['NickName'],
 				'team_name' => $team_details[0]['title'],
+				'match_status_icon' => $match_status_icon,
 				'link' => "m/teams/view/".$team_details[0]['uri'],
+				'team_image' => $team_image_url,
+				'increment' => $i,
+				'classname' => $classname,
+				'class' => $class_unconfirmed,
+				'score' => $aProfile['score'],
+				'player_response_practice'=> $player_response_practice_not_submitted,
                 'bx_if:admin' => array (
                     'condition' => $this->aDataEntry && ($this->aDataEntry['author_id']==$this->_oMain->_iProfileId),
-                    'content' => array ('id' => $aProfile['ID'], 'team_id' => $aProfile['team_id']),
+                    'content' => array ('id' => $aProfile['ID'], 'team_id' => $aProfile['team_id'], 'increment_class' => $i),
                 ),
 				'bx_if:confirmed' => array (
                     'condition' => $aProfile['confirmed'] == 0 ,
@@ -693,7 +705,8 @@ EOR;
 				'bx_if:teamPlayer' => array (
                     'condition' => !empty($sProfileThumbPlayer),
                     'content' => array (
-						'bx_repeat:team_player' => $sProfileThumbPlayer
+						'bx_repeat:team_player' => $sProfileThumbPlayer,
+						//'team_name_extra' => $team_details[0]['title']
 						
 					)
                 ),
@@ -724,10 +737,10 @@ EOR;
             );
 			if($this->aDataEntry['match_type'] == 1){ 
 				if($i==0) {
-				$sResult .= '<div><b>Home</b>  <div>' .$home_score.'</div> ' .$player_response. '</div>';
+				$sResult .= '<div class="playerresponse0">' .$player_response. '</div>';
 				} elseif($i==1) {
 					
-					$sResult .= '<div><b>Away</b>   <div>'.   $away_score.  '</div>'.  $player_response  .'</div>';
+					$sResult .= '<div class="playerresponse1">'.  $player_response  .'</div>';
 				} 
 				$sResult .= $this->_oTemplate->parseHtmlByName('unit_fan_match', $aVars);
 			} else {
@@ -740,5 +753,38 @@ EOR;
         return $isCenterContent ? $GLOBALS['oFunctions']->centerContent ($sResult, '.sys_fan_unit') : $sResult;
     
 	
+	}
+	
+	function getMatchStatusIcon ($match_status) {
+		
+		if($match_status == 'Waiting for players') {
+			$match_status_icon = 'Waiting';
+		} elseif($match_status == 'Scheduled') {
+			$match_status_icon = 'status_match_scheduled';
+		} elseif($match_status == 'Cancelled') {
+			$match_status_icon = 'Status_Cancelled';
+		} elseif($match_status == 'Kick off') {
+			$match_status_icon = 'status_match_Kickoff';
+		} elseif($match_status == 'Time Up/Waiting for Results') {
+			$match_status_icon = 'status_match_Timeup';
+		} elseif($match_status == 'Waiting for Result Confirmation') {
+			$match_status_icon = 'status_waitingConfirmation';
+		} elseif($match_status == 'No Match Result') {
+			$match_status_icon = 'no_match_result';
+		} elseif($match_status == 'Played') {
+			$match_status_icon = 'status_match_Played';
+		}
+		
+		$match_status_icon = $this->_oMain->getIconFromText($match_status_icon);
+		return  $match_status_icon;
+	}
+	
+	function getTeamImage ($teamId) {
+		
+		 $team_details = $this->_oDb->getTeamDetails($teamId); 
+		 $a = array ('ID' => $team_details[0]['author_id'], 'Avatar' => $team_details[0]['thumb']);
+         $aImageTeam = BxDolService::call('photos', 'get_image', array($a, 'thumb'), 'Search');
+         $sImage = ($aImageTeam=='') ? '/modules/boonex/teams/templates/base/images/no-image-thumb1.png' : $aImageTeam['file'];
+		 return $sImage;
 	}
 }

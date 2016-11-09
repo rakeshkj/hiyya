@@ -330,7 +330,14 @@ class BxMatchDb extends BxDolTwigModuleDb
 		}
 		return $team_all_id;
 	}
-	
+	function getMatchOwnerId($matchid) {
+		
+		$team_ids = $this->getAll("SELECT `id_profile` FROM `bx_matches_fans` WHERE id_entry='".$matchid."' AND `type`='t' ORDER BY `when` DESC LIMIT 0,2");
+		foreach ($team_ids as $team_id) {
+			$team_all_id[] = $team_id['id_profile'];
+		}
+		return $team_all_id;
+	}
 	function getConfirmedPlayersPractice ($matchId) {
 		
 		return $this->getOne ("SELECT count(*) as count FROM `bx_matches_fans` WHERE id_entry='".$matchId."' AND `confirmed`='1'");	

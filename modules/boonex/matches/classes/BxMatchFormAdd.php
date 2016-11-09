@@ -165,7 +165,7 @@ class BxMatchFormAdd extends BxDolFormMedia
 			}    
 			if(!empty($user_check) || $match_eligibility_team==0)
 				continue;
-			if($team_player_count[0]['player_count'] <= $team_max_capacity && $team_player_count[0]['player_count']>=$pgdetails[0]['min_players'] && $team_player_count[0]['player_count']>=$team_min_capacity) {
+			//if($team_player_count[0]['player_count'] <= $team_max_capacity && $team_player_count[0]['player_count']>=$team_min_capacity) {
 				//$aTeams[$val['id']] = '<a target="_blank" href="m/teams/view/'.$val['uri'].'">'.$val['title'].'</a>';
 				$aTeams[$val['id']] = $val['title'];
 				
@@ -174,7 +174,7 @@ class BxMatchFormAdd extends BxDolFormMedia
                 'link' => "m/teams/view/".$val['uri'],
 				'ID' => $val['author_id'].'_'.$val['id'],
 				); */ 
-			}	
+			//}	
         }
 		//echo '<pre>';print_r($aTeams);
 		//

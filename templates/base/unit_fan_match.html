@@ -1,28 +1,35 @@
-<div class="searchrow_block_simple sys_fan_unit bx-def-margin-sec-top-auto">
+<div class="searchrow_block_simple__increment__ sys_fan_unit bx-def-margin-sec-top-auto">
 	<bx_if:admin>
-    <div class="bx_sys_unit_checkbox bx-def-round-corners">
+    <div class="bx_sys_unit_checkbox bx-def-round-corners checkboxteam__increment_class__">
         <input type="checkbox" name="sys_fan_unit[]" value="__team_id__" />
     </div>
 	</bx_if:admin>
-    __thumb__
-	<div class="clear_both"></div>
-	Team Name : <a href="__link__" target="_blank">__team_name__</a> <br><br>
-	<bx_if:teamadmin>
+	<span class="teamscore__increment__">__score__ </span>
+	 <div class="teamName__increment__ __classname__">
+		<a href="__link__" target="_blank"><img height="90px" width="90px" class="thumbnail_image_file bx-def-thumbnail bx-def-shadow bx-img-retina teamimage__increment__" src="__team_image__" alt="">__team_name__</a><br>
+		<a class="teamadmin" href="__team_admin_link__" target="_blank">__team_admin__</a>
+	 </div>
+	 <span class="status__increment__"><img src="__match_status_icon__" alt=""></span>
+	 
+	 <div class="playersection">
+			
+	</div>
+	<br><br><br><br>
+	<!--bx_if:teamadmin>
            
         <a href="__invite_link__" target="_blank">Invite Player</a><br><br><br>
 
-    </bx_if:teamadmin>
+    </bx_if:teamadmin-->
 	
 	<bx_if:teamPlayer>
-	Team's Players <br>
-           
         <bx_repeat:team_player>
-		<div class="searchrow_block_simple sys_fan_unit bx-def-margin-sec-top-auto">
+		<div class="player __player_response__ __class__" >
+		<!--div class="playerPosition">GK</div-->
 		__input_check_player__
-		    __thumbplayer__ 
-			<br>
+		    __thumbplayer__
 			
-			<div> __player_response__ </div>
+			
+			<!--div> __player_response__ </div-->
 			
 		</div><br>	
 		</bx_repeat:team_player>
